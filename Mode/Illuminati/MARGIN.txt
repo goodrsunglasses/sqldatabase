@@ -1,0 +1,53 @@
+with family as(
+  SELECT
+    internal_product_id id,
+    value family
+ FROM public.fact_netsuite_product_custom_fields 
+ where field_id = 4620
+ ), stage as(
+  SELECT
+    internal_product_id id,
+    value stage
+ FROM public.fact_netsuite_product_custom_fields 
+ where field_id = 4624
+ ), prodclass as(
+  SELECT
+    internal_product_id id,
+    value prodclass
+ FROM public.fact_netsuite_product_custom_fields 
+ where field_id = 508
+ )
+  SELECT 
+    ord.type,
+    ord.transaction_id,
+    cust.value,
+    convert_timezone('UTC','America/Los_Angeles',ord."timestamp") as converted_timestamp,
+		prod.name,
+		prod.item_id,
+		items.quantity,
+		case 
+		  when ord.discount is not NULL and ord.subtotal !=0
+		  then items.amount+((items.amount/ord.subtotal)*ord.discount)
+		  else items.amount
+		  end as amount,
+		(amount-(items.quantity*prod.average_cost)) as margin,
+		(margin/amount) as margin_percent,
+		prod.cost,
+		prodclass product_class,
+		family, 
+		stage
+ FROM public.fact_netsuite_orders ord
+ left outer join public.fact_netsuite_order_items items on items.order_id = ord.order_id
+ left outer join public.fact_netsuite_products prod on prod.product_id = items.order_item_id
+ left outer join public.fact_netsuite_order_custom_fields cust on cust.order_id=ord.order_id
+ left outer join family on prod.product_id=family.id
+ left outer join stage on prod.product_id=stage.id
+ left outer join prodclass on prod.product_id=prodclass.id
+ where type in ('CashSale','Invoice')  
+  and cust.field_id = 1628 
+ -- and value in ('Goodr.com','Global','Key Account','Specialty','Cabana','Amazon') 
+  and converted_timestamp >= '2023-01-01 00:00:00' ---qc
+  and amount <> 0 --- gd added (not going to count 0 amount orders because those are already reflected is herd budgets )
+ --- and prod.item_id in ({{sku_choice}})
+  and replace(product_class, '''', '') in ({{style_choice}})
+  and converted_timestamp BETWEEN  '{{start_date}}' and  '{{end_date}}' 
