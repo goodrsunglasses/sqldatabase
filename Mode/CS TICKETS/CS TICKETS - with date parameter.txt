@@ -1,0 +1,104 @@
+----- consolidate tickets, delete when find 'My Types' field
+with types as (
+   SELECT 
+		ticket_id id,
+		value
+ FROM public.dim_zendesk_tickets_custom_field
+ where custom_fields_id = 114100946374
+)
+
+
+----- counts number of orders by customer email
+ , CTE_ordercount as 
+  (
+SELECT 
+  distinct email,
+	COUNT(transaction_id) as "order_count"
+FROM public.fact_netsuite_orders 
+  GROUP BY email
+ )
+
+ 
+----- cleanup agent names
+,zendesk_agents as
+(
+SELECT distinct
+  agent_name
+, CASE
+  when agent_name in ('Ashley','Ashley C.') then 'Crafty'
+  when agent_name in ('Fredy','Fredy Montoya') then 'Fredy'
+  WHEN agent_name in ('Kristen','Kristen Hagen') then 'Kristen'
+  else agent_name
+  END agent_lookup
+FROM
+public.fact_zendesk_tickets
+)
+SELECT 
+    ticket_metric_id,
+    tags."tag",
+		tickets.ticket_id,
+		convert_timezone('UTC','America/Los_Angeles',tickets.timestamp) as converted_timestamp,
+		tickets.subject,
+		tickets.user_name,
+	 	tickets.email,
+		reopens,
+		replies,
+		assignee_updated_at,
+		requester_updated_at,
+		status_updated_at,
+		initially_assigned_at,
+		assigned_at,
+		solved_at,
+		latest_comment_added_at,
+		(reply_time_in_minutes_calendar *1.0 /60) reply_time_in_hours_calendar,
+		(reply_time_in_minutes_calendar *1.0 /60/24) reply_time_in_days_calendar,
+		reply_time_in_minutes_calendar,
+		reply_time_in_minutes_business,
+		(first_resolution_time_in_minutes_calendar * 1.0/60) first_resolution_time_in_hours_calendar,
+		first_resolution_time_in_minutes_business,
+		(full_resolution_time_in_minutes_calendar *1.0/60) full_resolution_time_in_hours_calendar, 
+		(full_resolution_time_in_minutes_calendar *1.0/60/24) full_resolution_time_in_days_calendar,
+		full_resolution_time_in_minutes_calendar,
+		full_resolution_time_in_minutes_business,
+		agent_wait_time_in_minutes_calendar,
+		agent_wait_time_in_minutes_business,
+		requester_wait_time_in_minutes_calendar,
+		requester_wait_time_in_minutes_business,
+		on_hold_time_in_minutes_calendar,
+		on_hold_time_in_minutes_business
+		latest_comment_added_at,
+		status,
+		priority,
+		description,
+		agent_id,
+		ticket_updated_at,
+		tickets.agent_name,
+		agents.agent_lookup,
+		CTE_ordercount.order_count,
+	  types.value
+	
+ FROM public.fact_zendesk_tickets tickets
+  left outer join public.fact_zendesk_ticket_metrics metrics on tickets.ticket_id=metrics.ticket_id
+  left outer join public.dim_zendesk_ticket_tag_map tags on tags.ticket_id=tickets.ticket_id
+  left join  zendesk_agents agents on tickets.agent_name = agents.agent_name
+  LEFT JOIN CTE_ordercount on tickets.email = CTE_ordercount.email 
+  left outer join types on metrics.ticket_id = types.id
+ WHERE converted_timestamp between '{{start_date}}' and  '{{end_date}}'
+  order by tickets.timestamp desc
+
+
+----- parameters
+{% form %}
+
+start_date:
+  type: date 
+  default: '2023-01-01'
+
+end_date:
+  type: date 
+  default: '2023-12-31'
+
+{% endform %}
+ 
+ 
+ 

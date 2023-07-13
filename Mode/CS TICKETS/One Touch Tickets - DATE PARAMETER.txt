@@ -1,0 +1,6 @@
+-- Returns first 100 rows from public.fact_zendesk_ticket_metrics
+  SELECT 
+		 ((COUNT (CASE WHEN replies = 1.0 then 1.0 END)) *1.00) /
+		 ((COUNT (CASE when replies >=1.0 then 1.0 END)) *1.00) "%onetouchtcks"
+ FROM public.fact_zendesk_ticket_metrics metrics 
+ WHERE "timestamp" between '{{start_date}}' and  '{{end_date}}'

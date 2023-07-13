@@ -1,0 +1,76 @@
+-- First sub query gets the count of shipping tickets grouped by truncated day
+with shipcount as(
+  SELECT 
+    date_trunc('day',metrics."timestamp") as truncdate,
+    count(metrics.ticket_id) as ShippingTickets
+  from 
+    public.fact_zendesk_ticket_metrics metrics
+  left outer join public.dim_zendesk_ticket_tag_map map on map.ticket_id = metrics.ticket_id
+  where map."tag" in('shipping_delay_bfcm__21','delivery_failure_delay_lagoon','delivery_failure_delay_stord','b2b-packing/shipping_delay','b2b-packing/shipping_delay-stord','b2b-delivery_delay','b2b-packing/shipping_delay-lagoon','b2b-packing/shipping_delay','b2b-packing/shipping_delay-stord','b2b-delivery_delay','b2b-packing/shipping_delay-lagoon','delivery_failure_delay') and truncdate >='2022-01-01'
+  group by truncdate
+)
+
+-- Second subquery gets the count of orders grouped by truncated day
+, ordercount as(
+  SELECT
+      date_trunc('day',orders."timestamp") as NS_date,
+      count(orders.order_id) as orders
+    FROM public.fact_netsuite_orders orders
+    where NS_date >= '2022-01-01'
+    group by NS_date
+)
+-- and finally the third one gets the count of packing tickets grouped by truncated day
+, packingcount as(
+  SELECT 
+    date_trunc('day',metrics."timestamp") as truncdate,
+    count(metrics.ticket_id) as packingtickets
+  from 
+    public.fact_zendesk_ticket_metrics metrics
+  left outer join public.dim_zendesk_ticket_tag_map map on map.ticket_id = metrics.ticket_id
+  where map."tag" in('b2b-short_shipments','b2b-short_shipments-lagoon','b2b-mis-shipments-stord','b2b-short_shipments-stord','b2b-mis-shipments-lagoon', 'b2b-short_shipments','b2b-short_shipments-lagoon','b2b-mis-shipments-stord','b2b-short_shipments-stord','b2b-mis-shipments-lagoon','march_2021_double_and_triples','missing_item_from_order','stock_issue','missing_item_from_order_lagoon','missing_item_incorrect_order-stord') and truncdate >='2022-01-01'
+  group by truncdate
+)
+-- subquery that pulls in the total number of tickets grouped by truncated day
+, ticketcount as(
+  SELECT 
+    date_trunc('day',metrics."timestamp") as truncdate,
+    count(metrics.ticket_id) as totaltickets
+  from 
+    public.fact_zendesk_ticket_metrics metrics
+  group by truncdate
+)
+-- subquery that pulls in the average reply time grouped by truncated day
+, avgreply as(
+  SELECT 
+    date_trunc('day',metrics."timestamp") as truncdate,
+    AVG(reply_time_in_minutes_calendar *1.0 /60/24) as avgreplydays
+  from 
+    public.fact_zendesk_ticket_metrics metrics
+  group by truncdate
+)
+-- The main query simply grabs the NS dates and counts first as there are more, then grabs the related shipping tickets or packing tickets count, if there isn't one for the day then it put a zero
+SELECT
+  NS_date as "Date",
+  case 
+    when shippingtickets is NUll then 0
+    else ShippingTickets
+  end,
+  case 
+    when packingtickets is NUll then 0
+    else packingtickets
+  end,
+  case 
+    when totaltickets is NUll then 0
+    else totaltickets
+  end,
+  case 
+    when avgreplydays is NUll then 0
+    else avgreplydays
+  end,
+  orders
+FROM ordercount
+left outer join shipcount on ordercount.NS_date=shipcount.truncdate
+left outer join packingcount on ordercount.NS_date=packingcount.truncdate
+left outer join ticketcount on ordercount.NS_date=ticketcount.truncdate
+left outer join avgreply on ordercount.NS_date=avgreply.truncdate
+order by NS_date asc

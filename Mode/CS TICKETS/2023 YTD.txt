@@ -1,0 +1,115 @@
+----- consolidate tickets, delete when find 'My Types' field
+with CTE_consolidatetickets as 
+(
+SELECT distinct
+  "tag", 
+  CASE 
+    when "tag" in ('X','sponsorship','sponsorship/donation_requests','thank_you','other','co-brand','order_cancelation_request') then 'Other'
+    when "tag" in ('b2b-d2c_only_launch','retail_support_','b2b-online') then 'B2B - Other'
+    when "tag" in ('b2b-key_accounts') then 'B2B - Key Accounts'
+    when "tag" in ('b2b-launch_delay','b2b-oos_requests','b2b-snow_g') then 'B2B - Product Questions'
+    when "tag" in ('b2b-marketing','b2b-order_check_in','b2b-order') then 'B2B -Sales'
+    when "tag" in ('b2b-packing/shipping_delay','b2b-packing/shipping_delay-stord','b2b-delivery_delay','b2b-packing/shipping_delay-lagoon') then 'B2B - Shipping'
+    when "tag" in ('b2b-short_shipments','b2b-short_shipments-lagoon','b2b-mis-shipments-stord','b2b-short_shipments-stord','b2b-mis-shipments-lagoon') then 'B2B - Packing'
+    when "tag" in ('b2b_retail_stands','sellgoodr_retail_stands') then 'B2B -Retail Stands'
+    when "tag" in ('box_error','broken_arm','frame_fade','lens_off','screw_loose','lens_peeling_scratching_spts','rubber_coating_issues','carl_s_infirmary') then 'Warranty'
+    when "tag" in ('defects') then 'Defects'
+    when "tag" in ('flamboyance_blunder_2022','ambassador') then 'Flamboyance'
+    when "tag" in ('march_2021_double_and_triples','missing_item_from_order','stock_issue','missing_item_from_order_lagoon','missing_item_incorrect_order-stord') then 'Packing'
+    when "tag" in ('b2b-golden_gate_trial') then 'B2B - Outreach'
+    when "tag" in ('b2b_-_new_retailer_denied','b2b-new_retailer_approved','new_retailer') then 'B2B - Onboarding'
+    when "tag" in ('order_modification-stord','order_modification','order_modification_lagoon') then 'Order modification'
+    when "tag" in ('feedback_other','lfg-mad','suggestion_for_new_product') then 'Feedback'
+    when "tag" in ('logo_missing') then 'D2C - Other'
+    when "tag" in ('b2b-defects/credits') then 'B2B- Warranty'
+    when "tag" in ('promo_code','promo') then 'Promo'
+    when "tag" in ('return_/_exchange') then 'Return'
+    when "tag" in ('website/issue_checking_out') then 'Website Issue'
+    when "tag" in ('b2b-scam/fraud','scam_information_provided_','scam_suspected') then 'Scam'
+    when "tag" in ('bulk_order') then 'Sales'
+    when "tag" in ('delivery_failure_delay','shipping_delay_bfcm__21','delivery_failure_delay_lagoon','delivery_failure_delay_stord') then 'Shipping'
+    when "tag" in ('product_questions') then 'Product Questions'
+    when "tag" in ('closed_by_merge','on_hold_1','closed_by_merge','help_survey','ohio','partnerships','returning_visitor','sales_rep_issues','test','voice_abandoned_in_voicemail','zopim_chat','b2b_support','goodbye_survey','international','phishing_risk_zendesk','redacted_content','voice_abandoned_in_queue','affiliate','internation','web_widget','zopim_chat_ended','zopim_chat_missed','zopim_offline_message') then 'NA'
+    END tag_lookup
+  FROM public.dim_zendesk_ticket_tag_map
+    )
+
+
+----- counts number of orders by customer email
+ , CTE_ordercount as 
+  (
+SELECT 
+  distinct email,
+	COUNT(transaction_id) as "order_count"
+FROM public.fact_netsuite_orders 
+  GROUP BY email
+ )
+
+ 
+----- cleanup agent names
+,zendesk_agents as
+(
+SELECT distinct
+  agent_name
+, CASE
+  when agent_name in ('Ashley','Ashley C.') then 'Crafty'
+  when agent_name in ('Fredy','Fredy Montoya') then 'Fredy'
+  WHEN agent_name in ('Kristen','Kristen Hagen') then 'Kristen'
+  else agent_name
+  END agent_lookup
+FROM
+public.fact_zendesk_tickets
+)
+SELECT 
+    ticket_metric_id,
+    tags."tag",
+		tickets.ticket_id,
+		convert_timezone('UTC','America/Los_Angeles',tickets.timestamp) as converted_timestamp,
+		tickets.subject,
+		tickets.user_name,
+	 	tickets.email,
+		reopens,
+		replies,
+		assignee_updated_at,
+		requester_updated_at,
+		status_updated_at,
+		initially_assigned_at,
+		assigned_at,
+		solved_at,
+		latest_comment_added_at,
+		(reply_time_in_minutes_calendar *1.0 /60) reply_time_in_hours_calendar,
+		(reply_time_in_minutes_calendar *1.0 /60/24) reply_time_in_days_calendar,
+		reply_time_in_minutes_calendar,
+		reply_time_in_minutes_business,
+		(first_resolution_time_in_minutes_calendar * 1.0/60) first_resolution_time_in_hours_calendar,
+		first_resolution_time_in_minutes_business,
+		(full_resolution_time_in_minutes_calendar *1.0/60) full_resolution_time_in_hours_calendar, 
+		(full_resolution_time_in_minutes_calendar *1.0/60/24) full_resolution_time_in_days_calendar,
+		full_resolution_time_in_minutes_calendar,
+		full_resolution_time_in_minutes_business,
+		agent_wait_time_in_minutes_calendar,
+		agent_wait_time_in_minutes_business,
+		requester_wait_time_in_minutes_calendar,
+		requester_wait_time_in_minutes_business,
+		on_hold_time_in_minutes_calendar,
+		on_hold_time_in_minutes_business
+		latest_comment_added_at,
+		status,
+		priority,
+		description,
+		agent_id,
+		ticket_updated_at,
+		tickets.agent_name,
+		agents.agent_lookup,
+		CTE_ordercount.order_count,
+	  CTE_consolidatetickets.tag_lookup
+	
+ FROM public.fact_zendesk_tickets tickets
+  left outer join public.fact_zendesk_ticket_metrics metrics on tickets.ticket_id=metrics.ticket_id
+  left outer join public.dim_zendesk_ticket_tag_map tags on tags.ticket_id=tickets.ticket_id
+  left join  zendesk_agents agents on tickets.agent_name = agents.agent_name
+  LEFT JOIN CTE_ordercount on tickets.email = CTE_ordercount.email 
+  LEFT JOIN CTE_consolidatetickets on CTE_consolidatetickets."tag" = tags."tag"
+ where tickets.timestamp >= '2023-01-01 08:00:00'
+ order by tickets.timestamp desc
+ 
