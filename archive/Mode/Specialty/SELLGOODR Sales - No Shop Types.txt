@@ -1,0 +1,149 @@
+
+with main as
+(
+SELECT DISTINCT
+  p.base_name
+, p.base_sku
+, p.manufacturer
+, g.name as shopify_store
+, c.company
+, c.metro
+, c.state billing_state
+, p.type as style
+, oi.order_id
+, oi.transaction_id
+, oi.quantity
+, date(convert_timezone('UTC','America/Los_Angeles',o.timestamp))  order_date
+, oi.state shipping_state
+, oi.zip
+, cgm.customer_group store_type
+--, cg.name store_type
+-- , count(distinct oi.order_id) order_count
+-- , sum(oi.quantity) quantity
+-- , sum(oi.quantity_refunded) quatity_refunded
+--, cg.*
+FROM
+  public.fact_shopify_order_items oi
+INNER JOIN
+  public.fact_shopify_orders o
+  on oi.order_id = o.order_id
+INNER JOIN 
+  public.fact_shopify_products p
+  on oi.product_id = p.product_id
+INNER JOIN 
+  public.dim_glew_accounts g
+  ON oi.glew_account_id = g.glew_account_id
+  AND g.glew_account_id IN (7591)--6400
+INNER JOIN
+   (SELECT
+    c.customer_id
+    , c.email
+    , last_order_date
+    , c.company
+    , c.metro
+    , c.state
+    , row_number() over (partition by c.customer_id order by last_order_date desc) rn --some customer emails are changed creating duplicate customers with same ID. so just grab most recent
+   FROM
+    public.dim_shopify_customers c
+    ) c
+  ON o.customer_id = c.customer_id
+  AND c.rn = 1
+-- LEFT JOIN
+--   public.dim_shopify_customer_group_map cgm
+--   on cgm.customer_id = c.customer_id
+--   and c.email = cgm.email
+--   AND c.rn=1
+ INNER JOIN
+   (
+      SELECT
+       cgm.glew_account_id
+     , cgm.customer_id
+     , cgm.customer_group
+     , row_number() over (partition by cgm.glew_account_id, cgm.customer_id order by  
+      CASE
+        WHEN customer_group = 'runshop' then 1
+        WHEN customer_group = 'golfshop' then 2
+        WHEN customer_group = 'bikeshop' then 3
+        WHEN customer_group = 'outshop' then 4
+        WHEN customer_group = 'tennisshop' then 5
+        WHEN customer_group = 'gymshop' then 6
+        WHEN customer_group = 'skishop' then 7
+        WHEN customer_group = 'climbshop' then 8
+        WHEN customer_group = 'watershop' then 9
+        WHEN customer_group = 'fishshop' then 10
+        WHEN customer_group = 'surfshop' then 11
+        WHEN customer_group = 'snowshop' then 12
+        WHEN customer_group = 'boatshop' then 13
+        WHEN customer_group = 'shoeshop' then 14
+        WHEN customer_group = 'skateshop' then 15
+        WHEN customer_group = 'studshop' then 16
+        WHEN customer_group = 'sportshop' then 17
+        WHEN customer_group = 'boushop' then 18
+        WHEN customer_group = 'axeshop' then 19
+        WHEN customer_group = 'flowershop' then 20
+        WHEN customer_group = 'giftshop' then 21
+        WHEN customer_group = 'horseshop' then 22
+        WHEN customer_group = 'iceshop' then 23
+        WHEN customer_group = 'optshop' then 24
+        WHEN customer_group = 'recordshop' then 25
+        WHEN customer_group = 'othershop' then 26
+        ELSE 27
+        END asc) rn
+      ,       CASE
+        WHEN customer_group = 'runshop' then 1
+        WHEN customer_group = 'golfshop' then 2
+        WHEN customer_group = 'bikeshop' then 3
+        WHEN customer_group = 'outshop' then 4
+        WHEN customer_group = 'tennisshop' then 5
+        WHEN customer_group = 'gymshop' then 6
+        WHEN customer_group = 'skishop' then 7
+        WHEN customer_group = 'climbshop' then 8
+        WHEN customer_group = 'watershop' then 9
+        WHEN customer_group = 'fishshop' then 10
+        WHEN customer_group = 'surfshop' then 11
+        WHEN customer_group = 'snowshop' then 12
+        WHEN customer_group = 'boatshop' then 13
+        WHEN customer_group = 'shoeshop' then 14
+        WHEN customer_group = 'skateshop' then 15
+        WHEN customer_group = 'studshop' then 16
+        WHEN customer_group = 'sportshop' then 17
+        WHEN customer_group = 'boushop' then 18
+        WHEN customer_group = 'axeshop' then 19
+        WHEN customer_group = 'flowershop' then 20
+        WHEN customer_group = 'giftshop' then 21
+        WHEN customer_group = 'horseshop' then 22
+        WHEN customer_group = 'iceshop' then 23
+        WHEN customer_group = 'optshop' then 24
+        WHEN customer_group = 'recordshop' then 25
+        WHEN customer_group = 'othershop' then 26
+        ELSE 27
+        END as primary_tag_id
+      FROM
+     public.dim_shopify_customer_group_map cgm
+     WHERE
+      customer_group in 
+      ( 'runshop','golfshop','bikeshop','outshop','tennisshop',
+        'gymshop','skishop','climbshop','watershop','fishshop',
+        'surfshop','snowshop','boatshop','shoeshop','skateshop',
+         'studshop','sportshop','boushop','axeshop','flowershop',
+        'giftshop','horseshop','iceshop','optshop','recordshop',
+       'othershop'
+      )) cgm
+    on cgm.customer_id = c.customer_id
+    and cgm.glew_account_id = g.glew_account_id
+    and cgm.rn = 1
+    and c.rn = 1
+) 
+SELECT 
+  *
+FROM 
+  main m
+WHERE
+  m.order_date >= '{{start_date}}' and m.order_date <'{{end_date}}'
+  and shipping_state in ({{ state }})
+  and store_type in ({{ store_type }})
+  and m.style in ({{ style }})
+  --and m.zip in ({{ zip }})
+--and base_name = 'A Ginger''s Soul'
+ORDER BY 
+  order_id

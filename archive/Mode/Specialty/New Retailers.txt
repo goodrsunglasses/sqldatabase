@@ -1,0 +1,297 @@
+--- NO LONGER USED - WHERE CREATED OR SOLVED DATE IS WITHIN RANGE, NEEDED THOSE SEPERATED.
+
+WITH 
+-- grid as
+-- (
+-- SELECT generate_series('2022-01-01'::timestamp, CURRENT_DATE::timestamp, interval '1 day')::date as date
+-- )
+approved as
+(
+  SELECT 
+    t.ticket_id
+  , t.subject
+  , t.description
+  , date(convert_timezone('UTC','America/Los_Angeles',t.timestamp)) created_date
+  , date(convert_timezone('UTC','America/Los_Angeles',tm.solved_at)) solved_date
+  , t.user_id
+  , t.user_name
+  , t.email
+  , case 
+    when t.description ilike '%golf%' then 1
+    when t.description ilike '%golfing%' then 1
+    when t.description ilike '%bike%' then 1
+    when t.description ilike '%biking%' then 1
+    else 0 
+    end bike_golf_flag
+  FROM
+    public.fact_zendesk_tickets t
+  INNER JOIN
+    public.dim_zendesk_ticket_tag_map ttm
+    on t.ticket_id = ttm.ticket_id
+    and ttm."tag" = 'b2b-new_retailer_approved'
+  INNER JOIN
+    public.fact_zendesk_ticket_metrics tm
+    on t.ticket_id = tm.ticket_id
+)
+, denied as
+(
+  SELECT 
+    t.ticket_id
+  , t.subject
+  , t.description
+  , date(convert_timezone('UTC','America/Los_Angeles',t.timestamp)) created_date
+  , date(convert_timezone('UTC','America/Los_Angeles',tm.solved_at)) solved_date
+  , t.user_id
+  , t.user_name
+  , t.email
+  , case 
+    when t.description ilike '%golf%' then 1
+    when t.description ilike '%golfing%' then 1
+    when t.description ilike '%bike%' then 1
+    when t.description ilike '%biking%' then 1
+    else 0 
+    end bike_golf_flag
+  FROM
+    public.fact_zendesk_tickets t
+  INNER JOIN
+    public.dim_zendesk_ticket_tag_map ttm
+    on t.ticket_id = ttm.ticket_id
+    and ttm."tag" = 'b2b_-_new_retailer_denied'
+  INNER JOIN
+    public.fact_zendesk_ticket_metrics tm
+    on t.ticket_id = tm.ticket_id
+)
+, apps as
+(
+  SELECT 
+    t.ticket_id
+  , t.subject
+  , t.description
+  , date(convert_timezone('UTC','America/Los_Angeles',t.timestamp)) created_date
+  , date(convert_timezone('UTC','America/Los_Angeles',tm.solved_at)) solved_date
+  , t.user_id
+  , t.user_name
+  , t.email
+  , case 
+    when t.description ilike '%golf%' then 1
+    when t.description ilike '%golfing%' then 1
+    when t.description ilike '%bike%' then 1
+    when t.description ilike '%biking%' then 1
+    else 0 
+    end bike_golf_flag
+  FROM
+    public.fact_zendesk_tickets t
+  INNER JOIN
+    public.dim_zendesk_ticket_tag_map ttm
+    on t.ticket_id = ttm.ticket_id
+    and ttm."tag" = 'new_retailer'
+  INNER JOIN
+    public.fact_zendesk_ticket_metrics tm
+    on t.ticket_id = tm.ticket_id
+)
+, base_data as
+(
+SELECT
+  *
+, 'approved' as status
+, 2 as status_order
+FROM
+  approved
+UNION
+SELECT
+  *
+, 'denied' as status
+, 1 as status_order
+FROM
+  denied
+UNION
+SELECT
+  *
+, 'new application' as status
+, 3 as status_order
+FROM
+  apps
+)
+, final_zen_data as
+(
+select
+  bd.*
+, row_number() over (partition by bd.ticket_id order by bd.status_order asc) rn
+, row_number() over (partition by bd.email order by bd.created_date desc) email_rn
+from 
+  base_data bd 
+)
+, orders as
+(
+SELECT
+  date(convert_timezone('UTC','America/Los_Angeles',o.timestamp)) order_date
+, o.quantity
+, o.revenue
+, o.customer_email
+, c.customer_id
+, o.state
+, o.glew_account_id
+, row_number() over (partition by o.customer_email order by date(convert_timezone('UTC','America/Los_Angeles',o.timestamp)) asc) order_num
+FROM 
+  public.fact_shopify_orders o
+INNER JOIN
+  final_zen_data fd
+  on o.customer_email = fd.email
+INNER JOIN
+   (SELECT
+    c.customer_id
+    , c.email
+    , last_order_date
+    , c.company
+    , c.metro
+    , c.state
+    , row_number() over (partition by c.customer_id order by last_order_date desc) rn --some customer emails are changed creating duplicate customers with same ID. so just grab most recent
+   FROM
+    public.dim_shopify_customers c
+    ) c
+  ON o.customer_id = c.customer_id
+  AND c.rn = 1
+WHERE
+  fd.rn = 1
+  and fd.email_rn = 1
+  and date(convert_timezone('UTC','America/Los_Angeles',o.timestamp)) >= fd.solved_date
+  and o.glew_account_id = 7591
+)-- select distinct customer_email, order_num, state, lag(state,1) over(partition by customer_email order by order_num asc) from orders where order_num in (1,2)   order by customer_email, order_num desc
+select 
+  fd.ticket_id
+, fd.subject
+, fd.description
+, fd.created_date
+, fd.solved_date
+, fd.user_id
+, fd.user_name
+, fd.email
+, case when bike_golf_flag = 1 then 'Yes' else 'No' end bike_or_golf
+, fd.status
+-- , cgm.customer_group store_type
+-- , o.customer_id
+, max(case when o.order_num =1 then o.order_date else null end) first_order_date
+, max(case when o.order_num =1 then o.quantity else null end) first_order_quantity
+, max(case when o.order_num =1 then o.revenue else null end) first_order_revenue
+, max(case when o.order_num =1 then o.state else null end) first_order_state
+, max(case when o.order_num =2 then o.order_date else null end) second_order_date
+, max(case when o.order_num =2 then o.quantity else null end) second_order_quantity
+, max(case when o.order_num =2 then o.revenue else null end) second_order_revenue
+--, max(case when o.order_num =2 then o.state else null end) second_order_state
+, max(o.state) order_state
+, max(case when o.order_num =1 and date_trunc('week',o.order_date) = date_trunc('week',current_date)  then 1 else 0 end) first_order_this_week --week starts on monday
+, max(case when o.order_num =1 and date_trunc('week',o.order_date) = date_trunc('week',current_date - interval '1 week')  then 1 else 0 end) first_order_last_week
+, max(case when date_trunc('week', fd.created_date) = date_trunc('week',current_date)  then 1 else 0 end) created_current_week_flag
+, max(case when date_trunc('week', fd.solved_date) = date_trunc('week',current_date)  then 1 else 0 end) solved_current_week_flag
+--, case when o.order_date is not null then DATE_PART('day', o.order_date - fd.solved_date) else null end days_to_order
+
+from 
+  final_zen_data fd
+left join
+  orders o
+  on fd.email = o.customer_email
+  and o.order_num in (1,2)
+-- Left JOIN
+--   (
+--       SELECT
+--       cgm.glew_account_id
+--     , cgm.customer_id
+--     , cgm.customer_group
+--     , row_number() over (partition by cgm.glew_account_id, cgm.customer_id order by  
+--       CASE
+--         WHEN customer_group = 'runshop' then 1
+--         WHEN customer_group = 'golfshop' then 2
+--         WHEN customer_group = 'bikeshop' then 3
+--         WHEN customer_group = 'outshop' then 4
+--         WHEN customer_group = 'tennisshop' then 5
+--         WHEN customer_group = 'gymshop' then 6
+--         WHEN customer_group = 'skishop' then 7
+--         WHEN customer_group = 'climbshop' then 8
+--         WHEN customer_group = 'watershop' then 9
+--         WHEN customer_group = 'fishshop' then 10
+--         WHEN customer_group = 'surfshop' then 11
+--         WHEN customer_group = 'snowshop' then 12
+--         WHEN customer_group = 'boatshop' then 13
+--         WHEN customer_group = 'shoeshop' then 14
+--         WHEN customer_group = 'skateshop' then 15
+--         WHEN customer_group = 'studshop' then 16
+--         WHEN customer_group = 'sportshop' then 17
+--         WHEN customer_group = 'boushop' then 18
+--         WHEN customer_group = 'axeshop' then 19
+--         WHEN customer_group = 'flowershop' then 20
+--         WHEN customer_group = 'giftshop' then 21
+--         WHEN customer_group = 'horseshop' then 22
+--         WHEN customer_group = 'iceshop' then 23
+--         WHEN customer_group = 'optshop' then 24
+--         WHEN customer_group = 'recordshop' then 25
+--         WHEN customer_group = 'othershop' then 26
+--         ELSE 27
+--         END asc) rn
+--       ,       CASE
+--         WHEN customer_group = 'runshop' then 1
+--         WHEN customer_group = 'golfshop' then 2
+--         WHEN customer_group = 'bikeshop' then 3
+--         WHEN customer_group = 'outshop' then 4
+--         WHEN customer_group = 'tennisshop' then 5
+--         WHEN customer_group = 'gymshop' then 6
+--         WHEN customer_group = 'skishop' then 7
+--         WHEN customer_group = 'climbshop' then 8
+--         WHEN customer_group = 'watershop' then 9
+--         WHEN customer_group = 'fishshop' then 10
+--         WHEN customer_group = 'surfshop' then 11
+--         WHEN customer_group = 'snowshop' then 12
+--         WHEN customer_group = 'boatshop' then 13
+--         WHEN customer_group = 'shoeshop' then 14
+--         WHEN customer_group = 'skateshop' then 15
+--         WHEN customer_group = 'studshop' then 16
+--         WHEN customer_group = 'sportshop' then 17
+--         WHEN customer_group = 'boushop' then 18
+--         WHEN customer_group = 'axeshop' then 19
+--         WHEN customer_group = 'flowershop' then 20
+--         WHEN customer_group = 'giftshop' then 21
+--         WHEN customer_group = 'horseshop' then 22
+--         WHEN customer_group = 'iceshop' then 23
+--         WHEN customer_group = 'optshop' then 24
+--         WHEN customer_group = 'recordshop' then 25
+--         WHEN customer_group = 'othershop' then 26
+--         ELSE 27
+--         END as primary_tag_id
+--       FROM
+--     public.dim_shopify_customer_group_map cgm
+--     WHERE
+--       customer_group in 
+--       ( 'runshop','golfshop','bikeshop','outshop','tennisshop',
+--         'gymshop','skishop','climbshop','watershop','fishshop',
+--         'surfshop','snowshop','boatshop','shoeshop','skateshop',
+--         'studshop','sportshop','boushop','axeshop','flowershop',
+--         'giftshop','horseshop','iceshop','optshop','recordshop',
+--       'othershop'
+--       )
+--       and cgm.glew_account_id = 7591
+--       ) cgm
+--     on cgm.customer_id = o.customer_id
+--     and cgm.glew_account_id = o.glew_account_id
+--     and cgm.rn = 1
+  
+  
+where 
+  fd.rn = 1
+  and  fd.email_rn = 1
+---  and fd.created_date >= '{{application_start_date}}' and fd.created_date < '{{application_end_date}}'
+  AND (fd.created_date >= '{{start_date}}' and fd.created_date <'{{end_date}}'
+  OR fd.solved_date >= '{{start_date}}' and fd.solved_date <'{{end_date}}')
+group BY  
+  fd.ticket_id
+, fd.subject
+, fd.description
+, fd.created_date
+, fd.solved_date
+, fd.user_id
+, fd.user_name
+, fd.email
+, case when bike_golf_flag = 1 then 'Yes' else 'No' end 
+, fd.status
+-- , o.customer_id
+-- , cgm.customer_group
+;
+

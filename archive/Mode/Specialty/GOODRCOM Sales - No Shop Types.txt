@@ -1,0 +1,71 @@
+
+with main as
+(
+SELECT DISTINCT
+  p.base_name
+, p.base_sku
+, p.manufacturer
+, g.name as shopify_store
+, c.company
+, c.metro
+, c.state billing_state
+, p.type as style
+, oi.order_id
+, oi.transaction_id
+, oi.quantity
+, oi.revenue  --- GD added
+, date(convert_timezone('UTC','America/Los_Angeles',o.timestamp))  order_date
+, oi.state shipping_state
+, oi.zip
+---, cgm.customer_group store_type
+--, cg.name store_type
+-- , count(distinct oi.order_id) order_count
+-- , sum(oi.quantity) quantity
+-- , sum(oi.quantity_refunded) quatity_refunded
+--, cg.*
+FROM
+  public.fact_shopify_order_items oi
+INNER JOIN
+  public.fact_shopify_orders o
+  on oi.order_id = o.order_id
+INNER JOIN 
+  public.fact_shopify_products p
+  on oi.product_id = p.product_id
+INNER JOIN 
+  public.dim_glew_accounts g
+  ON oi.glew_account_id = g.glew_account_id
+  AND g.glew_account_id IN (6400)-- GOODR.COM
+INNER JOIN
+   (SELECT
+    c.customer_id
+    , c.email
+    , last_order_date
+    , c.company
+    , c.metro
+    , c.state
+    , row_number() over (partition by c.customer_id order by last_order_date desc) rn --some customer emails are changed creating duplicate customers with same ID. so just grab most recent
+   FROM
+    public.dim_shopify_customers c
+    ) c
+  ON o.customer_id = c.customer_id
+  AND c.rn = 1
+-- LEFT JOIN
+--   public.dim_shopify_customer_group_map cgm
+--   on cgm.customer_id = c.customer_id
+--   and c.email = cgm.email
+--   AND c.rn=1
+)
+   
+SELECT 
+  *
+FROM 
+  main m
+WHERE
+  m.order_date >= '{{start_date}}' and m.order_date <'{{end_date}}'
+  and shipping_state in ({{ state }})
+  --and store_type in ({{ store_type }})
+  and m.style in ({{ style }})
+  --and m.zip in ({{ zip }})
+--and base_name = 'A Ginger''s Soul'
+ORDER BY 
+  order_id
