@@ -11,16 +11,6 @@ h1 {
   text-align: center;
 }
 
-ul{
-  background-color: #E96384;
-  display: flex;
-  font-size: 35px;
-  color: #40E0D8;
-  text-align: center;
-  list-style-position: inside;
-  border-width: 12px;
-  border-style: double;
-}
 p {
   font-family: "Times New Roman";
   font-size: 20px;
@@ -58,6 +48,11 @@ p span{
 .top-bar ul {
   display: flex;
   flex-wrap: wrap;
+  background-color: #E96384;
+  font-size: 35px;
+  color: #40E0D8;
+  border-width: 12px;
+  border-style: double;
 }
 .top-bar li {
   list-style-type: none;
