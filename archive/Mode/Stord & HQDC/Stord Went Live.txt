@@ -1,0 +1,47 @@
+with channel as(
+  SELECT
+    order_id id,
+    value channel
+ FROM public.fact_netsuite_order_custom_fields 
+ where field_id = 1628
+ )
+ 
+ SELECT distinct
+  date_trunc('day',"timestamp") as orderdate,
+  count(
+    case 
+      when location = 'Stord ATL' and channel = 'Specialty' then 1
+      when location = 'Stord ATL : Stord ATL - sellgoodr' then 1
+      end) as stordatl_sg,
+  count(
+    case 
+      when location = 'HQ DC : HQ DC - sellgoodr' then 1
+      when location = 'HQ DC : HQ DC' and channel = 'Specialty' then 1
+      end) as DC_SG,
+ count(
+    case 
+      when location = 'Stord LAS' and channel = 'Specialty' then 1
+      end) as stordlas_sg,
+  (stordatl_sg+DC_SG+stordlas_sg) as sg_total,
+  count(
+    case 
+      when location = 'Stord ATL' and channel = 'Goodr.com' then 1
+      when location='Stord ATL : Stord ATL - goodr.com' then 1
+      end) as stordatl_goodrcom,
+  count(
+    case 
+      when location = 'HQ DC : HQ DC - goodr.com' then 1
+      when location = 'HQ DC : HQ DC' and channel = 'Goodr.com' then 1
+      end) as DC_goodrcom,
+  count(
+    case 
+      when location = 'Stord LAS' and channel = 'Goodr.com' then 1
+      end) as stordlas_goodrcom,
+  (stordatl_goodrcom+DC_goodrcom+stordlas_goodrcom) as goodrcom_total
+ FROM 
+  public.fact_netsuite_orders orders
+  left outer join channel on orders.order_id=channel.id
+ where 
+  type ='SalesOrder' and  status= 'Billed' and orderdate > '2023-01-01'  --- stord atl went live 1/4/2023
+ group by orderdate
+ order by orderdate asc
