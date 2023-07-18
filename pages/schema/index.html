@@ -1,36 +1,53 @@
 <!DOCTYPE html>
 <html>
+	<div id="main">
 <head>
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="../../css/site.css">
-</div>
-		<div id="Div">
-		<h1>BI Documentation Library</h1>
-    <div class = "top-bar">
-	<ul>
-		<li><a href="../pages/schema/index.html">Schema</a></li>
-	  <li><a href="../functions/index.html">Functions</a></li>
-		<li><a href="../supplychain/index.html">Supply Chain</a></li>
-		<li><a href="../illuminati/index.html">Illuminati</a></li>
-	</ul>
-</div>
-</div>
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="../../css/site.css">
+	<script src="../../js/script.js" defer></script>
+	<div id="mySidenav" class="sidenav"><!-- Navigation bar code -->
+		<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+		<a href="01-lifestyle/index.html">Lifestyle</a>
+		<a href="02-map/index.html">Map/Routes</a>
+		<a href="03-recipes/index.html">Recipe Of The Day</a>
+		<a href="04-resources/index.html">Resources</a>
+		<a href="05-contribute/index.html">Contribute Advice</a>
+	</div>
+	<div id="Div">
+		<div class="headers">
+
+			<img class="navimg" src="../../img/menuham.png" onclick="openNav()" />
+			<h1>BI Documentation Library</h1>
+
+		</div>
+		<div class="top-bar">
+			<ul>
+				<li><a href="../../index.html">Home</a></li>
+				<li><a href="../functions/index.html">Functions</a></li>
+				<li><a href="../supplychain/index.html">Supply Chain</a></li>
+				<li><a href="../illuminati/index.html">Illuminati</a></li>
+			</ul>
+		</div>
+
 </head>
-<link rel="stylesheet" type="text/css" href="css/site.css">
+
 <body>
 	<main>
-		<div class ="grid">
-			<div class = "grid-item">
+		<div class="grid">
+			<div class="grid-item">
 				<div id="schema">
-				<h1>Schema</h1>
-				<p><span>The schema is where you can find relevant information about specifc dim and fact tables and their 
-				fields. This is where you will find variable types, short summaries and variable names. More in depth ones will be 
-				in each relevant page, this is just a specific line by line variable definition area. 
-				</span></p>
+					<h1>Schema</h1>
+					<p><span>The schema is where you can find relevant information about specifc dim and fact tables and
+							their
+							fields. This is where you will find variable types, short summaries and variable names. More
+							in depth ones will be
+							in each relevant page, this is just a specific line by line variable definition area.
+						</span></p>
+				</div>
 			</div>
-			</div>
-			
+
 		</div>
 	</main>
 </body>
+</div>
 </html>

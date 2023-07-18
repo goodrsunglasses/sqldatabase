@@ -1,72 +1,92 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="css/site.css">
-</div>
+<div id="main">
+
+	<head>
+		<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/site.css">
+		<script src="js/script.js" defer></script>
+
 		<div id="Div">
-		<h1>BI Documentation Library</h1>
-    <div class = "top-bar">
-	<ul>
-		<li><a href="pages/schema/index.html">Schema</a></li>
-	  <li><a href="pages/functions/index.html">Functions</a></li>
-		<li><a href="pages/supplychain/index.html">Supply Chain</a></li>
-		<li><a href="pages/illuminati/index.html">Illuminati</a></li>
-	</ul>
-</div>
-</div>
-</head>
-<link rel="stylesheet" type="text/css" href="css/site.css">
-<body>
-	<main>
-		<div class ="grid">
-			<div class = "grid-item">
-				<div id="schema">
-				<h1>Schema</h1>
-				<p><span>The schema is where you can find relevant information about specifc dim and fact tables and their 
-				fields. This is where you will find variable types, short summaries and variable names. More in depth ones will be 
-				in each relevant page, this is just a specific line by line variable definition area. 
-				</span></p>
+			<div class="headers">
+
+		
+				<h1>BI Documentation Library</h1>
+
 			</div>
+			<div class="top-bar">
+				<ul>
+					<li><a href="pages/schema/index.html">Schema</a></li>
+					<li><a href="pages/functions/index.html">Functions</a></li>
+					<li><a href="pages/supplychain/index.html">Supply Chain</a></li>
+					<li><a href="pages/illuminati/index.html">Illuminati</a></li>
+				</ul>
 			</div>
-			<!-- <div class = "grid-item">
+		</div>
+	</head>
+	<link rel="stylesheet" type="text/css" href="css/site.css">
+
+	<body>
+		<main>
+			<div class="grid">
+				<div class="grid-item">
+					<div id="schema">
+						<h1>Schema</h1>
+						<p><span>The schema is where you can find relevant information about specifc dim and fact tables
+								and their
+								fields. This is where you will find variable types, short summaries and variable names.
+								More in depth ones will be
+								in each relevant page, this is just a specific line by line variable definition area.
+							</span></p>
+					</div>
+				</div>
+				<!-- <div class = "grid-item">
 					<img class= "self-image" img src="img/me.jpg" />
 			</div> -->
-			<div class = "grid-item">
-				<div id="functions">
-				<h1>Functions</h1>
-                <p><span>Functions are where there will be more detailed information about the calculations we do in SQL for specific fields that
-					need more advanced processing. Fields that require a series of Case-Whens, CTE's or other aggregate functions will be explained 
-					thoroughly here.
-				</span></p>
+				<div class="grid-item">
+					<div id="functions">
+						<h1>Functions</h1>
+						<p><span>Functions are where there will be more detailed information about the calculations we
+								do in SQL for specific fields that
+								need more advanced processing. Fields that require a series of Case-Whens, CTE's or
+								other aggregate functions will be explained
+								thoroughly here.
+							</span></p>
+					</div>
 				</div>
-			</div>
-		<!-- <div class = "grid-item">
+				<!-- <div class = "grid-item">
 			<img class= "self-image" img src="img/jacob.png"/>
 			</div> -->
 
-		<div class = "grid-item">
-			<div id="supply">
-			<h1>Supply Chain</h1>
-            <p><span>Specifics regarding the reporting layer that makes up the Supply Chain Dashboard. More details 
-				forthcoming but for right now the idea is that anything specific to this dashboard SQL-wise will be stored here.
-				Fields that aren't found in dim and fact tables or are in the functions libary will be outlined here.
-			</span></p>
-			</div>
-		</div>
-        <div class = "grid-item">
-			<div id="illuminati">
-			<h1>Illuminati</h1>
-            <p><span>Specifics regarding the reporting layer that makes up the Illuminati Dashboard. More details 
-				forthcoming but for right now the idea is that anything specific to this dashboard SQL-wise will be stored here.
-				Fields that aren't found in dim and fact tables or are in the functions libary will be outlined here.</span></p>
-			</div>
-		</div>
-	<!-- <div class = "grid-item">
+				<div class="grid-item">
+					<div id="supply">
+						<h1>Supply Chain</h1>
+						<p><span>Specifics regarding the reporting layer that makes up the Supply Chain Dashboard. More
+								details
+								forthcoming but for right now the idea is that anything specific to this dashboard
+								SQL-wise will be stored here.
+								Fields that aren't found in dim and fact tables or are in the functions libary will be
+								outlined here.
+							</span></p>
+					</div>
+				</div>
+				<div class="grid-item">
+					<div id="illuminati">
+						<h1>Illuminati</h1>
+						<p><span>Specifics regarding the reporting layer that makes up the Illuminati Dashboard. More
+								details
+								forthcoming but for right now the idea is that anything specific to this dashboard
+								SQL-wise will be stored here.
+								Fields that aren't found in dim and fact tables or are in the functions libary will be
+								outlined here.</span></p>
+					</div>
+				</div>
+				<!-- <div class = "grid-item">
 		<img class= "self-image" img src="img/jorge.png"/>
 		</div> -->
-		</div>
-		</div>
-	</main>
-</body>
+			</div>
+		</main>
+	</body>
+</div>
+
 </html>

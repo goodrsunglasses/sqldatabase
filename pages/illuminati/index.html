@@ -1,37 +1,54 @@
 <!DOCTYPE html>
 <html>
+	<div id="main">
 <head>
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="../../scripts/csvreader.js"></script>
-    <link rel="stylesheet" type="text/css" href="../../css/site.css">
-</div>
-		<div id="Div">
-		<h1>BI Documentation Library</h1>
-    <div class = "top-bar">
-	<ul>
-		<li><a href="../schema/index.html">Schema</a></li>
-	  <li><a href="../functions/index.html">Functions</a></li>
-		<li><a href="../supplychain/index.html">Supply Chain</a></li>
-		<li><a href="../illuminati/index.html">Illuminati</a></li>
-	</ul>
-</div>
-</div>
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="../../css/site.css">
+	<script src="../../js/script.js" defer></script>
+	<div id="mySidenav" class="sidenav"><!-- Navigation bar code -->
+		<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+		<a href="01-lifestyle/index.html">Cash Sales and Invoices</a>
+		<a href="02-map/index.html">Margin</a>
+		<a href="03-recipes/index.html">Parameter Style</a>
+		<a href="unionedrevenue.html">Unioned - Revenue</a>
+	</div>
+	<div id="Div">
+		<div class="headers">
+
+			<img class="navimg" src="../../img/menuham.png" onclick="openNav()" />
+			<h1>BI Documentation Library</h1>
+
+		</div>
+		<div class="top-bar">
+			<ul>
+				<li><a href="../../index.html">Home</a></li>
+                <li><a href="../schema/index.html">Schema</a></li>
+				<li><a href="../functions/index.html">Functions</a></li>
+				<li><a href="../supplychain/index.html">Supply Chain</a></li>
+				
+			</ul>
+		</div>
+
 </head>
-<link rel="stylesheet" type="text/css" href="css/site.css">
+
 <body>
 	<main>
-		<div class ="grid">
-            <div class = "grid-item">
-                <h1>SQL</h1>
-                <iframe src="../../archive/Mode/Illuminati/Unioned Revenue.txt" width="100%" height="600px"></iframe>
-            </div>
-            <div class = "grid-item">
-                <body onload="readCSV()">
-                    <div id="csvTable"></div>
-                </body>
+		<div class="grid">
+			<div class="grid-item">
+				<div id="schema">
+					<h1>Illuminati</h1>
+					<p><span>Specifics regarding the reporting layer that makes up the Illuminati Dashboard. More
+                        details
+                        forthcoming but for right now the idea is that anything specific to this dashboard
+                        SQL-wise will be stored here.
+                        Fields that aren't found in dim and fact tables or are in the functions libary will be
+                        outlined here.
+						</span></p>
+				</div>
 			</div>
-			
+
 		</div>
 	</main>
 </body>
+</div>
 </html>
