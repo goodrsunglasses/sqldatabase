@@ -126,6 +126,7 @@ table {
   width: 10%; /* Adjust the table width as needed */
   margin-left: auto;
   margin-right: auto;
+  color: black;
 }
 
 th, td {
