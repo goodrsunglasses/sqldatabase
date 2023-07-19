@@ -10,7 +10,7 @@ function openNav() {
     document.getElementById("main").style.marginLeft = "0";
   }
 
-  function parseCSV(csvData) {
+function parseCSV(csvData) {
     const lines = csvData.split('\n');
     const data = [];
     for (let i = 0; i < lines.length; i++) {
