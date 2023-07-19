@@ -41,7 +41,7 @@ function generateTable(data) {
 
 function loadData(fileName) {
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', 'assets/' + fileName, true); // Update the path to the CSV files
+    xhr.open('GET', '../../assets/' + fileName, true); // Update the path to the CSV files
 
     xhr.onload = function() {
         if (xhr.status === 200) {
@@ -60,7 +60,3 @@ function loadData(fileName) {
     xhr.send();
 }
 
-window.onload = function() {
-    const fileName = 'unionedrevprev.csv'; // Replace with the desired CSV file name
-    loadData(fileName);
-};

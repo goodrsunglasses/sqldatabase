@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<div id="main">
+
+    <head>
+        <link rel="stylesheet" type="text/css" href="../../css/site.css">
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="../../js/script.js" defer></script>
+        <link rel="stylesheet" type="text/css" href="../../css/site.css">
+
+        <div id="mySidenav" class="sidenav"><!-- Navigation bar code -->
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+            <a href="index.html">Illuminati - Home</a>
+            <a href="02-margin.html">Margin</a>
+            <a href="03-parameterstyle.html">Parameter Style</a>
+
+        </div>
+
+        <div class="headers">
+            <img class="navimg" src="../../img/menuham.png" onclick="openNav()" />
+            <h1>BI Documentation Library</h1>
+        </div>
+
+        <div class="top-bar">
+            <ul>
+                <li><a href="../schema/index.html">Schema</a></li>
+                <li><a href="../functions/index.html">Functions</a></li>
+                <li><a href="../supplychain/index.html">Supply Chain</a></li>
+                <li><a href="../illuminati/index.html">Illuminati</a></li>
+            </ul>
+        </div>
+
+    </head>
+    <link rel="stylesheet" type="text/css" href="css/site.css">
+    <script>
+    window.onload = function() {
+        const fileName = 'marginprev.csv'; // Replace with the desired CSV file name
+        loadData(fileName);
+    };
+</script>
+    <body>
+        <main>
+            <div class="grid">
+                <div class="grid-item">
+                    <h1>SQL</h1>
+                    <iframe src="../../archive/Mode/Illuminati/Unioned Revenue.txt" width="100%"
+                        height="600px"></iframe>
+                </div>
+                <div class="grid-item">
+                    <h2>Purpose</h2>
+                    <p><span>This query was created for x so that y.
+                    </span></p>
+                    <h2>Row Setup</h2>
+                    <p><span>One row per transaction.
+                    </span></p>
+                    <h2>CTE's/Functions</h2>
+                    <p><span>Explanation of specific functions or CTE's found only in this Report.
+                    </span></p>
+                    <h2>Table Sample</h2>
+                    <div id="tableContainer"></div>
+            
+            </div>
+        </main>
+    </body>
+</div>
+
+</html>

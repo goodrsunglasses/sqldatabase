@@ -1,0 +1,11 @@
+type,transaction_id,value,converted_timestamp,name,item_id,quantity,amount,margin,margin_percent,cost,product_class,family,stage
+CashSale,CS0965909,Goodr.com,1/1/2023 0:00,Bosley's Basset Hound Dreams,OG-HND-NRBR1,1,25.00,21.48,0.86,3.16,OGS,INLINE,ACTIVE
+CashSale,CS0965909,Goodr.com,1/1/2023 0:00,Three Parts Tee,FOG-BRCL-CP1-RF,1,25.00,21.19,0.85,3.31,OGS,INLINE,ACTIVE
+CashSale,CS0965913,Goodr.com,1/1/2023 0:00,Sunbathing with Wizards,OG-LB-GL1,1,25.00,21.1,0.84,3.61,OGS,INLINE,ACTIVE
+CashSale,CS0965913,Goodr.com,1/1/2023 0:00,Going To Valhalla... Witness!,OG-GY-CH1,1,25.00,20.34,0.81,3.61,OGS,INLINE,ACTIVE
+CashSale,CS0965913,Goodr.com,1/1/2023 0:00,Gardening with a Kraken,OG-PR-PR1,1,25.00,21.05,0.84,3.61,OGS,INLINE,ACTIVE
+CashSale,CS0965913,Goodr.com,1/1/2023 0:00,Falkor's Fever Dream,OG-BL-BL1,1,25.00,21.07,0.84,3.61,OGS,INLINE,ACTIVE
+CashSale,CS0965913,Goodr.com,1/1/2023 0:00,Mind the Wage Gap Wedge,FRG-BL-CP1-RF,1,35.00,29.96,0.86,4.58,RUNWAYS,INLINE,ACTIVE
+CashSale,CS0965913,Goodr.com,1/1/2023 0:00,A Ginger's Soul,OG-BK-BK1,1,25.00,21.38,0.86,3.11,OGS,INLINE,ACTIVE
+CashSale,CS0965913,Goodr.com,1/1/2023 0:00,I Pickled These Myself,CG-TL-PP1-RF,1,25.00,21.07,0.84,3.61,CIRCLE GS,INLINE,ACTIVE
+CashSale,CS0965927,Goodr.com,1/1/2023 0:00,Iced by Yetis,OG-WH-BL1,1,25.00,20.41,0.82,3.61,OGS,INLINE,ACTIVE
