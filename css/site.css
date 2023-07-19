@@ -47,6 +47,7 @@ p span{
   grid-gap: 10px;
   grid-template-columns: auto auto;
 }
+
 .grid-item{
   border-style: double;
   color:#40E0D8;
@@ -54,6 +55,7 @@ p span{
   background-color: #FFFFFF;
   text-align:center;
 }
+
 
 .top-bar {
   display: flex;
