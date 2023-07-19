@@ -119,4 +119,20 @@ p span{
   .sidenav {padding-top: 15px;}
   .sidenav a {font-size: 18px;}
 }
+table {
+  border-collapse: collapse; /* Combine borders between cells */
+  width: 10%; /* Adjust the table width as needed */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+th, td {
+  border: 1px solid black; /* Add a black border with 1px width */
+  padding: 1px; /* Add padding around the content in cells */
+  text-align: left; /* Align text to the left within cells */
+}
+
+th {
+  background-color: #f0f0f0; /* Set a background color for header cells */
+}
 
