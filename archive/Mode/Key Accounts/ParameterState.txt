@@ -1,0 +1,69 @@
+SELECT DISTINCT
+  billing_state
+FROM(
+with family as(
+  SELECT
+    internal_product_id id,
+    value family
+ FROM public.fact_netsuite_product_custom_fields 
+ where field_id = 4620
+ ), stage as(
+  SELECT
+    internal_product_id id,
+    value stage
+ FROM public.fact_netsuite_product_custom_fields 
+ where field_id = 4624
+ ), prodclass as(
+  SELECT
+    internal_product_id id,
+    value prodclass
+ FROM public.fact_netsuite_product_custom_fields 
+ where field_id = 508
+ ),channel as(
+  SELECT
+    order_id id,
+    value channel
+ FROM public.fact_netsuite_order_custom_fields 
+ where field_id = 1628
+ )
+  SELECT 
+    ord.type,
+    ord.status, ---gd added
+    ord.customer_id,
+    ord.customer_name, --- gd added
+    ord.transaction_id,
+    ord.billing_state,
+    channel,
+    convert_timezone('UTC','America/Los_Angeles',ord."timestamp") as converted_timestamp,
+		prod.name,
+		prod.item_id,
+		items.quantity,
+		case 
+		  when ord.discount is not NULL and ord.subtotal !=0
+		  then items.amount+((items.amount/ord.subtotal)*ord.discount)
+		  else items.amount
+		  end as amount,
+		(amount-(items.quantity*prod.average_cost)) as margin,
+		prod.cost,
+		prodclass product_class,
+		family, 
+		stage
+ FROM public.fact_netsuite_orders ord
+ left outer join public.fact_netsuite_order_items items on items.order_id = ord.order_id
+ left outer join public.fact_netsuite_products prod on prod.product_id = items.order_item_id
+ left outer join family on prod.product_id=family.id
+ left outer join stage on prod.product_id=stage.id
+ left outer join prodclass on prod.product_id=prodclass.id
+ left outer join channel on channel.id=ord.order_id
+ where type in ('CashSale','Invoice','Salesorder')  
+  and channel = 'Key Account'  ---gd added
+  and converted_timestamp BETWEEN  '{{start_date}}' and  '{{end_date}}'
+)
+{% form %}
+state_choice:
+    type: multiselect
+    default: all
+    options:
+        labels: billing_state
+        values: billing_state
+{% endform %}

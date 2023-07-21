@@ -1,0 +1,60 @@
+-- PARAMETERS: ONLY KEY ACCOUNT
+SELECT
+  num,
+  transaction_id,
+  channel,
+  customer_name,
+  type,
+  converted_timestamp,
+  status,
+  sum(quantity) as total_quantity,
+  sum(revenue) as total_revenue,
+  sum(margin) as total_margin
+from
+(
+with channel as(
+  SELECT
+    order_id id,
+    value channel
+ FROM public.fact_netsuite_order_custom_fields 
+ where field_id = 1628
+ ),num as(
+  SELECT
+    order_id id,
+    value num
+ FROM public.fact_netsuite_order_custom_fields 
+ where field_id = 1650
+ )
+  SELECT 
+    num,
+    ord.transaction_id,
+    channel,
+    customer_name,
+    ord.type,
+    convert_timezone('UTC','America/Los_Angeles',ord."timestamp") as converted_timestamp,
+    ord.status,
+		prod.name,
+		prod.item_id,
+		items.quantity,
+		case 
+		  when ord.discount is not NULL and ord.subtotal !=0
+		  then items.amount+((items.amount/ord.subtotal)*ord.discount)
+		  else items.amount
+		  end as revenue,
+		prod.average_cost,
+		(revenue-(items.quantity*prod.average_cost)) as margin
+		
+ FROM public.fact_netsuite_orders ord
+ left outer join public.fact_netsuite_order_items items on items.order_id = ord.order_id
+ left outer join public.fact_netsuite_products prod on prod.product_id = items.order_item_id
+ left outer join channel on channel.id=ord.order_id
+ left outer join num on num.id=ord.order_id
+ where ord.type = 'SalesOrder'
+  and channel='Key Account'
+ -- and status = 'Pending Fulfillment'  --qc
+  and num like '%PB%'
+  and customer_id in ({{key_account}})
+--  and converted_timestamp > '2023-01-01 00:00:00' 
+)
+group by num,transaction_id,channel,customer_name,type,converted_timestamp,status
+order by num asc
