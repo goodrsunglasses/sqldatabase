@@ -1,0 +1,19 @@
+with ponum as(
+SELECT
+    order_id id,
+    value ponum
+ FROM public.fact_netsuite_order_custom_fields  
+ where field_id = 1578
+)
+select 
+  ord.type,
+  convert_timezone('UTC','America/Los_Angeles',ord."timestamp") as converted_timestamp,
+  ponum,
+  ord.transaction_id,
+  ord.customer_name,
+  ord.status,
+  ord.quantity,
+  ord.total
+from public.fact_netsuite_orders ord
+left outer join ponum on ponum.id=ord.order_id
+where ord.type='PurchaseOrder'

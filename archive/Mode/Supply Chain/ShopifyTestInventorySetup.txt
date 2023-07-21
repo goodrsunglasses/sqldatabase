@@ -1,0 +1,28 @@
+-- Returns first 100 rows from public.fact_shopify_location_inventory
+-- This is just a test to determine the how to find the data from shopify's end of day inventory counts to determine what makes a sale missed/avoidable
+  SELECT 
+		date,
+		inventory_item_id,
+		location_id,
+		glew_account_id,
+		quantity,
+		price,
+		cost,
+		product_id,
+		base_product_id
+ FROM public.fact_shopify_location_inventory LIMIT 100;
+
+-- Returns first 100 rows from public.fact_shopify_location_inventory
+  SELECT 
+		date,
+		inventory_item_id,
+		location_id,
+		glew_account_id,
+		quantity,
+		price,
+		cost,
+		product_id,
+		base_product_id
+ FROM public.fact_shopify_location_inventory LIMIT 100;
+ 
+ 

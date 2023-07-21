@@ -1,0 +1,54 @@
+SELECT 
+count(distinct transaction_id) as total_pos,
+(count(distinct
+  CASE 
+    when day<21 then transaction_id
+    end)*1.0)/(total_pos*1.0) as late_percent,
+sum(quantity) as total_purchased_quantity ,
+sum(
+  case 
+    when family = 'INLINE' THEN quantity
+    end) as Inline_sum,
+sum(
+  case 
+    when family in ('LIMITED','LICENSING') THEN quantity
+    end) as limited_licensing_sum,
+(count(distinct
+  case 
+    when customer_name= ('Wenzhou Brightlook Optical,Co.Ltd') THEN transaction_id
+    end)*1.0)/(total_pos*1.0) as brightlook_orders_percent
+
+FROM(
+  with ponum as(
+  SELECT
+      order_id id,
+      value ponum
+   FROM public.fact_netsuite_order_custom_fields  
+   where field_id = 1578
+  ),family as(
+    SELECT
+      internal_product_id id,
+      value family
+   FROM public.fact_netsuite_product_custom_fields 
+   where field_id = 4620
+   )
+  select 
+    ord.type,
+    convert_timezone('UTC','America/Los_Angeles',ord."timestamp") as converted_timestamp,
+    extract(DAY FROM ord."timestamp") as day,
+    ponum,
+    ord.transaction_id,
+    ord.customer_name,
+    ord.status,
+    ord.quantity as total_quantity,
+    ord.total,
+    prod.name,
+    items.quantity,
+    family
+  from public.fact_netsuite_orders ord
+  left outer join ponum on ponum.id=ord.order_id
+  left outer join public.fact_netsuite_order_items items on ord.order_id=items.order_id
+  left outer join public.fact_netsuite_products prod on prod.product_id = items.order_item_id
+  left outer join family on prod.product_id = family.id
+  where ord.type='PurchaseOrder' 
+)
