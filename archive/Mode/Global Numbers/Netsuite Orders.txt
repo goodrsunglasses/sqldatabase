@@ -1,0 +1,79 @@
+-- with invoices as
+-- (
+-- SELECT 
+-- o.location
+-- , o.order_id
+-- , cf.value
+-- , onum.value order_number
+-- , o.status as invoice_status
+-- , o.*
+-- FROM
+--   public.fact_netsuite_orders o
+-- inner join
+--   public.fact_netsuite_order_custom_fields cf
+--   on o.order_id = cf.order_id
+--   and cf.name = 'cseg7'
+-- inner join
+--   public.fact_netsuite_order_custom_fields onum
+--   on o.order_id = onum.order_id
+--   and onum.name = 'custbody_boomi_shipstation_ordernumber'
+-- WHERE
+--   o.type = 'Invoice'
+--   and cf.value = 'Global' and onum.value  = 910679012
+-- )
+SELECT 
+o.location
+, cf.value as cseg
+, onum.value as order_number
+, convert_timezone('UTC','America/Los_Angeles',o.timestamp) as order_date
+, o.transaction_id
+, o.order_id
+, o.email
+, o.quantity
+, o.total
+, o.subtotal
+, o.tax
+, o.discount
+, o.shipping
+, o.handling
+, o.type
+, o.status
+-- --, o.billing_city
+-- --, o.billing_state
+-- --, o.billing_zip
+-- . o.billing_country
+, o.shipping_city
+-- , o.shipping_state
+-- , o.shipping_zip
+, o.shipping_country
+, convert_timezone('UTC','America/Los_Angeles',o.shipping_date) as shipping_date
+FROM
+  public.fact_netsuite_orders o
+inner join
+  public.fact_netsuite_order_custom_fields  cf
+  on o.order_id = cf.order_id
+  and cf.name = 'cseg7'
+inner join
+  public.fact_netsuite_order_custom_fields onum
+  on o.order_id = onum.order_id
+  and onum.name = 'custbody_boomi_shipstation_ordernumber'
+-- left join
+--   invoices i
+--   on onum.value = i.order_number
+WHERE
+  o.type = 'SalesOrder'
+  and cf.value = 'Global'
+  -- and email = 'paul@injinji.com.au'
+--  and transaction_id in ('SO0030118')
+  
+  -- select distinct o.billing_zip from public.fact_netsuite_orders o order by type
+  
+  -- select distinct billing_country,shipping_country from public.fact_netsuite_orders order by shipping_country
+  
+  -- select distinct * from public.fact_netsuite_order_items limit 100
+  -- select * from public.dim_netsuite_subsidiaries
+  
+  -- select distinct order_id,name, value from public.fact_netsuite_order_custom_fields where (order_id in (43904,2581586,228613) or value = 943979001) and name = 'custbody_boomi_shipstation_ordernumber' order by order_id
+  
+
+-- LIMIT 10

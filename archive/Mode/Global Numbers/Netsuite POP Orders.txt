@@ -1,0 +1,50 @@
+with products as
+(
+  select distinct
+    oicf.order_item_id
+  , oicf.value as product_name
+  from
+  public.fact_netsuite_order_item_custom_fields oicf
+  where
+  oicf.name = 'custcolitemdisplayname'
+  and oicf.value ilike '%POP%'
+
+)
+, order_details as
+(
+select
+  case when o.shipping_country is null then null
+  when len(o.shipping_country) <2 then null else right(o.shipping_country,len(o.shipping_country)-1) end as shipping_country
+  --o.shipping_country
+, p.product_name
+, ROW_NUMBER() OVER (PARTITION BY shipping_country ORDER BY sum(oi.quantity) DESC) rn
+, count(oi.order_id) as order_count
+--, oi.name
+, sum(oi.quantity) as quantity
+, sum(o.total) as total
+
+from
+  public.fact_netsuite_orders o
+inner join
+  public.fact_netsuite_order_custom_fields  cf
+  on o.order_id = cf.order_id
+  and cf.name = 'cseg7'
+  and cf.value = 'Global'
+inner join
+  public.fact_netsuite_order_items oi
+  on o.order_id = oi.order_id
+  and o.type = 'SalesOrder'
+inner join
+  products p
+  on oi.order_item_id = p.order_item_id
+group BY
+  shipping_country
+, product_name
+)
+SELECT
+  *
+from
+  order_details od
+
+order by
+  shipping_country, quantity desc
