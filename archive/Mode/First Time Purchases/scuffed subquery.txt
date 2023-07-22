@@ -1,0 +1,28 @@
+-- Selects the order numbers and skus in every order that is not in an identical subquery, which is searching for all orders containing milds
+SELECT
+  trans.transaction_id ordernum,
+  prod.sku
+FROM(
+  select 
+    customer_id,
+    min("timestamp") as dated
+  from public.fact_shopify_orders 
+  group by customer_id
+)as firsttime 
+left outer join public.fact_shopify_orders trans on (trans."timestamp"=firsttime.dated and firsttime.customer_id=trans.customer_id)
+left outer join public.fact_shopify_order_items items on trans.order_id=items.order_id
+left outer join public.fact_shopify_products prod on prod.product_id=items.product_id
+-- the bulk of the logic is here, in the end of the where statement with the check that the ordernumber is not in the list of orders containing the milds
+where dated BETWEEN '2022-01-01 00:00:00' and '2022-12-31 23:59:00' and items.glew_account_id = '6400' and ordernum not in ( select distinct
+  trans.transaction_id ordernum
+from(
+  select 
+    customer_id,
+    min("timestamp") as dated
+  from public.fact_shopify_orders 
+  group by customer_id
+)as firsttime 
+left outer join public.fact_shopify_orders trans on (trans."timestamp"=firsttime.dated and firsttime.customer_id=trans.customer_id)
+left outer join public.fact_shopify_order_items items on trans.order_id=items.order_id
+left outer join public.fact_shopify_products prod on prod.product_id=items.product_id
+where dated BETWEEN '2022-01-01 00:00:00' and '2022-12-31 23:59:00' and items.glew_account_id = '6400' and prod.sku in ('OG-BK-BK1','OG-HND-NRBR1'))
