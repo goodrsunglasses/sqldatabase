@@ -1,0 +1,56 @@
+with channel as(
+  SELECT
+    order_id id,
+    value channel
+ FROM public.fact_netsuite_order_custom_fields 
+ where field_id = 1628
+ ),family as(
+  SELECT
+    internal_product_id id,
+    value family
+ FROM public.fact_netsuite_product_custom_fields 
+ where field_id = 4620
+ ), prodclass as(
+  SELECT
+    internal_product_id id,
+    value prodclass
+ FROM public.fact_netsuite_product_custom_fields 
+ where field_id = 508
+ ), collection as(
+  SELECT
+    internal_product_id id,
+    value collection
+ FROM public.fact_netsuite_product_custom_fields 
+ where field_id = 4623)
+  SELECT 
+    customer_name,
+    shipping_address_addr_1,
+    shipping_city,
+    shipping_state,
+    shipping_zip,
+    channel,
+    convert_timezone('UTC','America/Los_Angeles',ord."timestamp") as converted_timestamp,
+		prod.name,
+		prod.item_id,
+		items.quantity,
+		items.amount pre_discount,
+		case 
+		  when ord.discount is not NULL and ord.subtotal !=0
+		  then items.amount+((items.amount/ord.subtotal)*ord.discount)
+		  else items.amount
+		  end as discounted_amount,
+		prodclass product_class,
+		family, 
+		collection
+ FROM public.fact_netsuite_orders ord
+ left outer join public.fact_netsuite_order_items items on items.order_id = ord.order_id
+ left outer join public.fact_netsuite_products prod on prod.product_id = items.order_item_id
+ left outer join public.fact_netsuite_order_custom_fields cust on cust.order_id=ord.order_id
+ left outer join family on prod.product_id=family.id
+ left outer join prodclass on prod.product_id=prodclass.id
+ left outer join channel on channel.id=ord.order_id
+ left outer join collection on collection.id=prod.product_id
+ left outer join public.fact_netsuite_item_fulfillments fulfill on fulfill.created_from_id=ord.order_id
+ where ord.type = 'SalesOrder' 
+  and channel='Key Account'
+  and converted_timestamp between '2023-03-01 00:00:00' and '2023-03-01 23:59:59'
