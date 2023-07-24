@@ -1,0 +1,33 @@
+--- ARCHIVED VERSION - DON'T CREATE VISUALS ON
+ SELECT 
+ location,  
+ count(location) as "Count of Orders",
+ avg("Click to Ship")as "Average Click to Ship",
+ avg("Ship to Porch")as "Average Ship to Porch"
+ from(
+  with num as(
+  SELECT
+    cust.order_id id,
+    orders.location,
+    cust.value num
+ FROM public.fact_netsuite_order_custom_fields cust
+ left outer join public.fact_netsuite_orders orders on orders.order_id=cust.order_id
+ where field_id = 1650
+ )
+    SELECT
+      events.order_id,
+      num.location,
+      convert_timezone('UTC','America/Los_Angeles',orders."timestamp") as click,
+      min(happened_at) as ship,
+      max(happened_at) as porch,
+      datediff(day,click,ship) as "Click to Ship",
+      datediff(day,ship,porch) as "Ship to Porch"
+   FROM 
+      public.fact_shopify_order_fulfillment_events events 
+      left outer join public.fact_shopify_fulfillments fulfill on fulfill.order_id=events.order_id
+      left outer join public.fact_shopify_orders orders on events.order_id=orders.order_id
+      left outer join num on num.num=orders.transaction_id
+    WHERE  events.status in ('confirmed','out_for_delivery') and shipment_status='delivered' and click > '2022-01-01 00:00:00'
+    group by events.order_id,orders."timestamp",num.location
+  )
+  group by location

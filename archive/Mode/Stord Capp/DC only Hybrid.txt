@@ -1,0 +1,41 @@
+--- goodr.com and sellgoodr before we changed the way that location was noted (before May)
+--- NEEDS DATE PARAMETERS (date and channel)
+--- add channels 
+SELECT 
+monthclick as "date", --- date 
+location, --- order location
+count(location) as "Count of Orders", -- how many orders within that timeframe
+avg("Click to Ship")as "Average Click to Ship", -- in partial days
+avg("Ship to Porch")as "Average Ship to Porch" --in partial days
+from(
+  with num as(
+  SELECT
+    cust.order_id id,
+    orders.location,
+    cust.value num
+ FROM public.fact_netsuite_order_custom_fields cust
+ left outer join public.fact_netsuite_orders orders on orders.order_id=cust.order_id
+ where field_id = 1650
+ )
+    SELECT
+      events.order_id,
+      num.num,
+      num.location,
+      convert_timezone('UTC','America/Los_Angeles',orders."timestamp") as click,
+      date_trunc('day',click) as monthclick,
+      convert_timezone('UTC','America/Los_Angeles',min(happened_at)) as ship,
+      convert_timezone('UTC','America/Los_Angeles',max(happened_at)) as porch,
+      datediff(hour,click,ship)/24.0 as "Click to Ship",
+      datediff(hour,ship,porch)/24.0 as "Ship to Porch"
+   FROM 
+      public.fact_shopify_order_fulfillment_events events 
+      left outer join public.fact_shopify_fulfillments fulfill on fulfill.order_id=events.order_id
+      left outer join public.fact_shopify_orders orders on events.order_id=orders.order_id
+      left outer join num on num.num=orders.transaction_id
+    WHERE  events.status in ('in_transit','confirmed','out_for_delivery') and shipment_status='delivered' 
+    and click between '2022-01-01 00:00:00' and '2023-01-01 00:00:00' 
+    and num.location in ('HQ DC : HQ DC - goodr.com','HQ DC : HQ DC - sellgoodr','Stord ATL : Stord ATL - goodr.com','Stord ATL : Stord ATL - sellgoodr')
+    group by events.order_id,orders."timestamp",num.location,num.num
+  )
+  group by monthclick,location
+  order by monthclick

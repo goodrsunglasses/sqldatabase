@@ -1,0 +1,27 @@
+with family as(
+  SELECT
+    internal_product_id id,
+    value family
+ FROM public.fact_netsuite_product_custom_fields 
+ where field_id = 4620
+ ), stage as(
+  SELECT
+    internal_product_id id,
+    value stage
+ FROM public.fact_netsuite_product_custom_fields 
+ where field_id = 4624
+ )
+  SELECT 
+    ord.type,
+		prod.name,
+		prod.item_id,
+		items.quantity,
+		items.amount,
+		family, 
+		stage
+ FROM public.fact_netsuite_orders ord
+ left outer join public.fact_netsuite_order_items items on items.order_id = ord.order_id
+ left outer join public.fact_netsuite_products prod on prod.product_id = items.order_item_id
+ left outer join family on prod.product_id=family.id
+ left outer join stage on prod.product_id=stage.id
+ where type = 'SalesOrder'

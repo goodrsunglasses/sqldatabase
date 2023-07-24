@@ -1,0 +1,109 @@
+----- MILDS (carts with inline milds)
+with milds as (
+select distinct
+  trans.transaction_id ordernum
+from(
+  select 
+    customer_id,
+    min("timestamp") as dated
+  from public.fact_shopify_orders 
+  group by customer_id
+)as firsttime 
+left outer join public.fact_shopify_orders trans on (trans."timestamp"=firsttime.dated and firsttime.customer_id=trans.customer_id)
+left outer join public.fact_shopify_order_items items on trans.order_id=items.order_id
+left outer join public.fact_shopify_products prod on prod.product_id=items.product_id
+where dated BETWEEN '2022-01-01 00:00:00' and '2022-12-31 23:59:00' and items.glew_account_id = '6400' and prod.sku in ('VRG-BK-BK1-NR','RG-BK-BK1','OG-BK-CL1-BLB','OG-BK-CH1','MG-TR-BR1-NR','MG-GY-BK1-FE','MG-BK-BK1-NR','G00030-PHG-BR1-NR','G00029-PHG-BK1-NR','G00022-MG-CH4-RF','FOG-BL-BL1-RF','CG-TR-CL1-BLB','CG-TR-BR1-NR','CG-BK-BK1-NR','BFG-TR-GR1','BFG-BK-BK1-NR','OG-BK-BK1','OG-HND-NRBR1','PP-MIX-2-DECPRO1','G00111-LFG-BK1-NR','G00116-LFG-BR1-NR','G00171-SG-GY1-NR')
+), 
+----- WILDS (carts with inline styled and wild but no inline mild)
+wilds as (
+select distinct
+  trans.transaction_id ordernum
+from(
+  select 
+    customer_id,
+    min("timestamp") as dated
+  from public.fact_shopify_orders 
+  group by customer_id
+)as firsttime 
+left outer join public.fact_shopify_orders trans on (trans."timestamp"=firsttime.dated and firsttime.customer_id=trans.customer_id)
+left outer join public.fact_shopify_order_items items on trans.order_id=items.order_id
+left outer join public.fact_shopify_products prod on prod.product_id=items.product_id
+where dated BETWEEN '2022-01-01 00:00:00' and '2022-12-31 23:59:00' 
+  and items.glew_account_id = '6400' 
+  --- just styled and wilds
+  and prod.sku in ('G00022-MG-CH4-RF','BFG-BK-AM2-RF','OG-BL-CL1-BLB','CG-GD-BR1-NR','MG-GR-GR1-GR','G00198-MG-AM3-RF','G00023-MG-LLB2-RF','G00196-OG-PR1-GR','OG-PK-CLBM-PC','G00129-OG-GR1-RF','OG-BL-BL1','RG-TR-BL1-RF','G00031-PHG-BR1-NR','MG-BL-GRYL1-GR','CG-OR-LLB1-RF','RG-BLFLW-BL4-RF','G00200-VRG-AM3-RF','RG-BKHDT-BK1-NR','G00130-OG-BL4-RF','OG-GY-CH1','G00131-OG-AM4-RF','G00132-OG-BL4-RF','FBFG-RD-CP1-RF','RG-RDPRL-BK1-NR','G00173-SG-OR1-RF','G00065-WG-PK1-RF','G00019-CG-GR1-GR','CG-MN-CP1-FE','FBFG-BL-RS1-RF','BFG-BL-CL1-BLB','G00133-OG-BR1-NR','FRG-GR-GR1-RF','OG-BK-BL1','G00112-LFG-LB1-RF','CG-BK-BL2-RF','FRG-BL-CP1-RF','BFG-GR-GR1','G00113-LFG-LLB2-RF','OG-BK-PK1-RF','RG-PK-CL1-BLB','G00135-OG-LB1-RF','G00068-WG-IB2-RF','OG-GY-LG1','CG-CL-CLBM-PC','G00032-PHG-PR2-RF','G00021-CG-CH4-RF','FOG-BRCL-CP1-RF','RG-LPD-BR1-NR','OG-BK-TL1','VRG-GY-RS2-RF','OG-BK-AM1','RG-GN-CLBM-PC','G00136-OG-AM3-RF','G00137-OG-LTG2-RF','FOG-WH-RS1-RF','G00199-VRG-PR2-RF','G00172-SG-SB1-RF','MG-OR-RS2-RF','G00197-MG-TL6-RF','BFG-YL-CLBM-PC','BFG-PK-TL4-RF','OG-OR-BL1','G00034-PHG-GB3-RF','OG-TL-PR1','G00064-WG-RS1-NR','CG-YL-RS1-FE','OG-PK-TL1','OG-PR-PR1','CG-TL-PP1-RF','OG-WH-BL1','CG-PK-PK1-RF','G00024-MG-LTG2-RF','MG-TL-PK1-RF','G00195-OG-GB3-RF','G00066-WG-GYL1-RF','VRG-NYL-CH4-RF','OG-TL-TL1','G00069-WG-CH4-RF','OG-RD-RS1','OG-YWLB-NRRD1','RG-CL-RB1-RF','FRG-PK-RS1-RF','G00067-WG-AM3-RF','VRG-PK-PR2-RF','G00114-LFG-PK1-RF','G00115-LFG-PK1-RF','OG-WH-PR2-RF','G00033-PHG-TL6-RF','CG-CL-PR2-RF','OG-LB-GL1','OG-YL-BL1','MG-GR-GR1-FE','G00020-CG-LTG2-RF','BFG-OR-BL2-RF','OG-YL-PK1-RF')
+  and ordernum not in ( select distinct
+  trans.transaction_id ordernum
+from(
+  select 
+    customer_id,
+    min("timestamp") as dated
+  from public.fact_shopify_orders 
+  group by customer_id
+)as firsttime 
+left outer join public.fact_shopify_orders trans on (trans."timestamp"=firsttime.dated and firsttime.customer_id=trans.customer_id)
+left outer join public.fact_shopify_order_items items on trans.order_id=items.order_id
+left outer join public.fact_shopify_products prod on prod.product_id=items.product_id
+where dated BETWEEN '2022-01-01 00:00:00' and '2022-12-31 23:59:00' and items.glew_account_id = '6400' and prod.sku in ('VRG-BK-BK1-NR','RG-BK-BK1','OG-BK-CL1-BLB','OG-BK-CH1','MG-TR-BR1-NR','MG-GY-BK1-FE','MG-BK-BK1-NR','G00030-PHG-BR1-NR','G00029-PHG-BK1-NR','G00022-MG-CH4-RF','FOG-BL-BL1-RF','CG-TR-CL1-BLB','CG-TR-BR1-NR','CG-BK-BK1-NR','BFG-TR-GR1','BFG-BK-BK1-NR','OG-BK-BK1','OG-HND-NRBR1','PP-MIX-2-DECPRO1','G00111-LFG-BK1-NR','G00116-LFG-BR1-NR','G00171-SG-GY1-NR'))
+)
+
+----- NO INLINES (carts without inlines)
+---wilds as (
+---select distinct
+---  trans.transaction_id ordernum
+---from(
+---  select 
+---    customer_id,
+---    min("timestamp") as dated
+---  from public.fact_shopify_orders 
+---  group by customer_id
+---)as firsttime 
+---left outer join public.fact_shopify_orders trans on (trans."timestamp"=firsttime.dated and firsttime.customer_id=trans.customer_id)
+---left outer join public.fact_shopify_order_items items on trans.order_id=items.order_id
+---left outer join public.fact_shopify_products prod on prod.product_id=items.product_id
+---where dated BETWEEN '2022-01-01 00:00:00' and '2022-12-31 23:59:00' and items.glew_account_id = '6400' and ordernum not in ( select distinct
+---  trans.transaction_id ordernum
+---from(
+---  select 
+---    customer_id,
+---    min("timestamp") as dated
+---  from public.fact_shopify_orders 
+---  group by customer_id
+---)as firsttime 
+---left outer join public.fact_shopify_orders trans on (trans."timestamp"=firsttime.dated and firsttime.customer_id=trans.customer_id)
+---left outer join public.fact_shopify_order_items items on trans.order_id=items.order_id
+---left outer join public.fact_shopify_products prod on prod.product_id=items.product_id
+---where dated BETWEEN '2022-01-01 00:00:00' and '2022-12-31 23:59:00' and items.glew_account_id = '6400' and prod.sku in ('VRG-BK-BK1-NR','RG-BK-BK1','OG-BK-CL1-BLB','OG-BK-CH1','MG-TR-BR1-NR','MG-GY-BK1-FE','MG-BK-BK1-NR','G00030-PHG-BR1-NR','G00029-PHG-BK1-NR','G00022-MG-CH4-RF','FOG-BL-BL1-RF','CG-TR-CL1-BLB','CG-TR-BR1-NR','CG-BK-BK1-NR','BFG-TR-GR1','BFG-BK-BK1-NR','OG-BK-BK1','OG-HND-NRBR1','PP-MIX-2-DECPRO1','G00111-LFG-BK1-NR','G00116-LFG-BR1-NR','G00171-SG-GY1-NR'))
+---)
+
+----- EVERYTHING (total carts)
+--, allothers as (
+--select distinct
+--  trans.transaction_id ordernum
+--from(
+--  select 
+--    customer_id,
+--    min("timestamp") as dated
+--  from public.fact_shopify_orders 
+--  group by customer_id
+--)as firsttime 
+--left outer join public.fact_shopify_orders trans on (trans."timestamp"=firsttime.dated and firsttime.customer_id=trans.customer_id)
+--left outer join public.fact_shopify_order_items items on trans.order_id=items.order_id
+--left outer join public.fact_shopify_products prod on prod.product_id=items.product_id
+--where dated BETWEEN '2022-01-01 00:00:00' and '2022-12-31 23:59:00' and items.glew_account_id = '6400'
+--)
+
+SELECT
+  'CARTS WITH INLINE MILDS' as Label,
+  count(milds.ordernum) 
+  from milds
+union
+--SELECT 
+--  'GRAND TOTAL',
+--  count(allothers.ordernum)
+--from allothers
+--union 
+SELECT 
+  'CARTS WITH ONLY INLINE WILDS' as Label,
+  count (wilds.ordernum)
+  from wilds

@@ -1,0 +1,15 @@
+with channel as(
+  SELECT
+    order_id id,
+    value channel
+ FROM public.fact_netsuite_order_custom_fields 
+ where field_id = 1628
+ )
+  SELECT 
+    ord.type,
+    ord.transaction_id,
+    convert_timezone('UTC','America/Los_Angeles',ord."timestamp") as converted_timestamp,
+		channel
+ FROM public.fact_netsuite_orders ord
+ left outer join channel on channel.id=ord.order_id
+ where type = 'SalesOrder' 

@@ -1,0 +1,47 @@
+--- stord both locations for goodr.com and sellgoodr only since may 
+--- NEEDS DATE PARAMETERS
+SELECT 
+monthclick as "date",
+location, -- order location
+chan as "channel", --- channel
+count(location) as "Count of Orders", -- how many orders within that timeframe
+avg("Click to Ship")as "Average Click to Ship", -- in partial days
+avg("Ship to Porch")as "Average Ship to Porch" --in partial days
+from(
+  with num as(
+  SELECT
+    cust.order_id id,
+    orders.location,
+    cust.value num
+ FROM public.fact_netsuite_order_custom_fields cust
+ left outer join public.fact_netsuite_orders orders on orders.order_id=cust.order_id
+ where field_id = 1650
+ ),channel as(
+  SELECT
+    order_id id,
+    value chan -- channel (only goodr.com and sellgoodr)
+ FROM public.fact_netsuite_order_custom_fields 
+ where field_id = 1628
+ )
+    SELECT
+      fulfill.order_id,
+      num.num,
+      num.location,
+      channel.chan,
+      convert_timezone('UTC','America/Los_Angeles',orders."timestamp") as click,
+      date_trunc('day',click) as monthclick,
+      convert_timezone('UTC','America/Los_Angeles',fulfill."timestamp") as ship,
+      convert_timezone('UTC','America/Los_Angeles',fulfill.updated_at) as porch,
+      datediff(hour,click,ship)/24.0 as "Click to Ship",
+      datediff(hour,ship,porch)/24.0 as "Ship to Porch"
+   FROM 
+      public.fact_shopify_fulfillments fulfill 
+      left outer join public.fact_shopify_orders orders on fulfill.order_id=orders.order_id
+      left outer join num on num.num=orders.transaction_id
+      left outer join channel on channel.id = num.id
+    WHERE  click > '2023-05-01 00:00:00' and num.location in ('Stord LAS','Stord ATL')
+    group by fulfill.order_id,orders."timestamp",num.location,num.num,fulfill."timestamp",fulfill.updated_at,channel.chan
+    
+  )
+  group by monthclick,location,chan
+  order by monthclick
