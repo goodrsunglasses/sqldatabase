@@ -6,6 +6,7 @@
         <link rel="stylesheet" type="text/css" href="../../css/site.css">
         <link rel="stylesheet" type="text/css" href="css/site.css">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="../../js/script.js" defer></script>
 
         <div id="mySidenav" class="sidenav"><!-- Navigation bar code -->
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
@@ -59,7 +60,9 @@
             displayCSVTable('../../assets/unionedrevprev.csv', 'rev_csv_div');
             displayCSVTable('../../assets/marginprev.csv', 'margin_csv_div');
             // Add more calls for more tables
+            openNav();
         });
+       
     </script>
 
     <body>
