@@ -4,9 +4,8 @@
 
     <head>
         <link rel="stylesheet" type="text/css" href="../../css/site.css">
-        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-        <script src="../../js/script.js" defer></script>
         <link rel="stylesheet" type="text/css" href="css/site.css">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
         <div id="mySidenav" class="sidenav"><!-- Navigation bar code -->
             <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
@@ -17,10 +16,8 @@
         <a id="top"></a>
         <div class="headers">
             <img class="navimg" src="../../img/menuham.png" onclick="openNav()" />
-
             <h1>BI Documentation Library</h1>
         </div>
-
         <div class="top-bar">
             <ul>
                 <li><a href="../../index.html">Home</a></li>
@@ -31,15 +28,38 @@
         </div>
 
     </head>
-    <link rel="stylesheet" type="text/css" href="css/site.css">
     <script>
-        window.onload = function () {
-            const fileName = 'unionedrevprev.csv'; // Replace with the desired CSV file name
-            loadData(fileName);
-            const fileName1 = 'marginprev.csv'; // Replace with the desired CSV file name
-            loadData1(fileName1);
-            openNav()
-        };
+        function displayCSVTable(csvFile, targetDiv) {
+            $.ajax({
+                type: 'GET',
+                url: csvFile,
+                dataType: 'text',
+                success: function (data) {
+                    const lines = data.split('\n');
+                    const table = $('<table>').addClass('csv-table');
+
+                    for (let i = 0; i < lines.length; i++) {
+                        const values = lines[i].split(',');
+                        const row = $('<tr>');
+
+                        for (let j = 0; j < values.length; j++) {
+                            const cell = $('<td>').text(values[j]);
+                            row.append(cell);
+                        }
+
+                        table.append(row);
+                    }
+
+                    $('#' + targetDiv).append(table);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            displayCSVTable('../../assets/unionedrevprev.csv', 'rev_csv_div');
+            displayCSVTable('../../assets/marginprev.csv', 'margin_csv_div');
+            // Add more calls for more tables
+        });
     </script>
 
     <body>
@@ -54,13 +74,15 @@
                         height="600px"></iframe>
                 </div>
                 <div class="grid-item">
-
+                    <iframe
+                        src="https://docs.google.com/document/d/e/2PACX-1vRp1QGHPi-68H-tTscpMfApxVS6tllr8YJzRMLnSBxl-2WuZY3XeZGA8y5GGezs7WFL7UThl1eHD2Xc/pub?embedded=true"
+                        width="100%" height="100%"></iframe>
                 </div>
             </div>
             <div class="grid2">
                 <div class="grid-item">
                     <h2>Table Sample</h2>
-                    <div id="tableContainer"></div>
+                    <div id="rev_csv_div"></div>
                 </div>
             </div>
         </main>
@@ -85,7 +107,7 @@
             <div class="grid2">
                 <div class="grid-item">
                     <h2>Table Sample</h2>
-                    <div id="tableContainer1"></div>
+                    <div id="margin_csv_div"></div>
                 </div>
             </div>
         </main>
