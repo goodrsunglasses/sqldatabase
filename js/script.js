@@ -38,6 +38,24 @@ function generateTable(data) {
 
     tableContainer.appendChild(table);
 }
+function generateTable1(data) {
+    const tableContainer = document.getElementById('tableContainer1');
+    const table = document.createElement('table');
+
+    for (let i = 0; i < data.length; i++) {
+        const row = document.createElement('tr');
+
+        for (let j = 0; j < data[i].length; j++) {
+            const cell = document.createElement(i === 0 ? 'th' : 'td');
+            cell.textContent = data[i][j];
+            row.appendChild(cell);
+        }
+
+        table.appendChild(row);
+    }
+
+    tableContainer.appendChild(table);
+}
 
 function loadData(fileName) {
     const xhr = new XMLHttpRequest();
@@ -59,4 +77,26 @@ function loadData(fileName) {
 
     xhr.send();
 }
+
+function loadData1(fileName) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', '../../assets/' + fileName, true); // Update the path to the CSV files
+
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            const csvData = xhr.responseText;
+            const parsedData = parseCSV(csvData);
+            generateTable1(parsedData);
+        } else {
+            console.error('Failed to load the CSV file: ' + fileName);
+        }
+    };
+
+    xhr.onerror = function() {
+        console.error('Failed to load the CSV file: ' + fileName);
+    };
+
+    xhr.send();
+}
+
 
