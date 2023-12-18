@@ -1,0 +1,3 @@
+[submodule "mozartdata"]
+	path = mozartdata
+	url = https://github.com/goodrbiflock/mozartdata
