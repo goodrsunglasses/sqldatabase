@@ -15,13 +15,7 @@ h1 {
   flex: 1;
   padding: 10px;
 }
-.headers{
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
+
 .navimg{
   margin: 10px;
 }

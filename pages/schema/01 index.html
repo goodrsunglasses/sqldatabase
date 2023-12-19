@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<div id="main">
+
+	<head>
+		<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="../../css/site.css">
+		<link rel="stylesheet" type="text/css" href="css/site.css">
+		<script src="../../js/script.js" defer></script>
+
+		<div id="mySidenav" class="sidenav"><!-- Navigation bar code -->
+			<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+			<a href="illuminati.html">Orders</a>
+			<a href="02-margin.html">Customers</a>
+			<a href="03-parameterstyle.html">General Ledger</a>
+			<a href="04-unionedrevenue.html">Purchase Orders</a>
+		</div>
+
+		<div class="headers">
+			<img class="navimg" src="../../img/menuham.png" onclick="openNav()" />
+			<h1>BI Documentation Library</h1>
+		</div>
+
+		<div class="top-bar">
+			<ul>
+				<li><a href="../../index.html">Home</a></li>
+				<li><a href="index.html">Schema</a></li>
+				<li><a href="../dashboards/index.html">Dashboards</a></li>
+			</ul>
+		</div>
+
+	</head>
+	<script>
+		$(document).ready(function () {
+			openNav();
+		});
+	</script>
+
+	<body>
+		<main>
+			<div class="grid">
+				<div class="grid-item">
+					<div id="orders">
+						<h1>Orders</h1>
+						<p><span>Specifics regarding all of the tables containing order level information, this will
+								encapsulate both dim, fact and mapping tables. They will be categorized as such, but
+								anything and everything to do with orders will be housed here.
+							</span></p>
+					</div>
+				</div>
+				<div class="grid-item">
+					<div id="customers">
+						<h1>Customers</h1>
+						<p><span>Specifics regarding all of the tables containing customer level information, this will
+								encapsulate both dim, fact and mapping tables. They will be categorized as such, but
+								anything and everything to do with customers will be housed here.
+							</span></p>
+					</div>
+				</div>
+				<div class="grid-item">
+					<div id="gl">
+						<h1>General Ledger</h1>
+						<p><span>Specifics regarding all of the tables containing general ledger level information, this
+								will
+								encapsulate both dim, fact and mapping tables. They will be categorized as such, but
+								anything and everything to do with general ledgers will be housed here.
+							</span></p>
+					</div>
+				</div>
+				<div class="grid-item">
+					<div id="purchaseorders">
+						<h1>Purchase Orders</h1>
+						<p><span>Specifics regarding all of the tables containing purchase order level information, this
+								will
+								encapsulate both dim, fact and mapping tables. They will be categorized as such, but
+								anything and everything to do with purchaseorders will be housed here.
+							</span></p>
+					</div>
+				</div>
+
+			</div>
+		</main>
+	</body>
+</div>
+
+</html>

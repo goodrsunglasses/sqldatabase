@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<div id="main">
+
+    <head>
+        <link rel="stylesheet" type="text/css" href="../../css/site.css">
+        <link rel="stylesheet" type="text/css" href="css/site.css">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="../../js/script.js" defer></script>
+
+        <div id="mySidenav" class="sidenav"><!-- Navigation bar code -->
+            <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+            <a href="#top">Illuminati - Top</a>
+            <a href="#revenue">Revenue</a>
+            <a href="#margin">Margin</a>
+            <a href="#style">Parameter: Style</a>
+        </div>
+        <a id="top"></a>
+        <div class="headers">
+            <img class="navimg" src="../../img/menuham.png" onclick="openNav()" />
+            <h1>BI Documentation Library</h1>
+        </div>
+        <div class="top-bar">
+            <ul>
+                <li><a href="../../index.html">Home</a></li>
+                <li><a href="../schema/index.html">Schema</a></li>
+                <li><a href="../functions/index.html">Functions</a></li>
+                <li><a href="index.html">Dashboards</a></li>
+            </ul>
+        </div>
+
+    </head>
+    <script>
+        function displayCSVTable(csvFile, targetDiv) {
+            $.ajax({
+                type: 'GET',
+                url: csvFile,
+                dataType: 'text',
+                success: function (data) {
+                    const lines = data.split('\n');
+                    const table = $('<table>').addClass('csv-table');
+
+                    for (let i = 0; i < lines.length; i++) {
+                        const values = lines[i].split(',');
+                        const row = $('<tr>');
+
+                        for (let j = 0; j < values.length; j++) {
+                            const cell = $('<td>').text(values[j]);
+                            row.append(cell);
+                        }
+
+                        table.append(row);
+                    }
+
+                    $('#' + targetDiv).append(table);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            displayCSVTable('../../assets/unionedrevprev.csv', 'rev_csv_div');
+            displayCSVTable('../../assets/marginprev.csv', 'margin_csv_div');
+            displayCSVTable('../../assets/parameterstyle.csv', 'style_csv_div');
+            // Add more calls for more tables
+            openNav();
+        });
+       
+    </script>
+
+    <body>
+        <main>
+            <a id="revenue"></a>
+            <h3>Unioned Revenue</h3>
+            <div class="grid">
+                <div class="grid-item">
+
+                    <h1>SQL</h1>
+                    <iframe src="../../archive/Mode/Illuminati/Unioned Revenue.txt" width="100%"
+                        height="600px"></iframe>
+                </div>
+                <div class="grid-item">
+                    <iframe src="https://docs.google.com/document/d/e/2PACX-1vR6Qes6yp0ON66D7qjx6LtuF6tdAyEanbTiClv5dZn_UooXpgXaTAERtEWLWBJ3el1AN8TqiV58NeIj/pub?embedded=true" width="100%" height="100%"></iframe>
+                </div>
+            </div>
+            <div class="grid2">
+                <div class="grid-item">
+                    <h2>Table Sample</h2>
+                    <div id="rev_csv_div"></div>
+                </div>
+            </div>
+        </main>
+        <br><br>
+        <br><br>
+        <br><br>
+        <br><br>
+        <main>
+            <a id="margin"></a>
+            <h3>Margin</h3>
+            <div class="grid">
+                <div class="grid-item">
+                    <a id="margin"></a>
+                    <h1>SQL</h1>
+                    <iframe src="../../archive/Mode/Illuminati/MARGIN.txt" width="100%"
+                        height="600px"></iframe>
+                </div>
+                <div class="grid-item">
+                    <iframe src="https://docs.google.com/document/d/e/2PACX-1vRdMwNdLeqPtkDSg270UXFI6l-ajPT8jbD-c0TMwylBsorTn4Fwp41kx_qjY5dgQ0ENVDZHMP4QJi-B/pub?embedded=true" width="100%" height="100%"></iframe>
+                </div>
+            </div>
+            <div class="grid2">
+                <div class="grid-item">
+                    <h2>Table Sample</h2>
+                    <div id="margin_csv_div"></div>
+                </div>
+            </div>
+        </main>
+        <br><br>
+        <br><br>
+        <br><br>
+        <br><br>
+        <main>
+            <a id="style"></a>
+            <h3>Parameter: Style</h3>
+            <div class="grid">
+                <div class="grid-item">
+                    <a id="margin"></a>
+                    <h1>SQL</h1>
+                    <iframe src="../../archive/Mode/Illuminati/Parameter Style.txt" width="100%"
+                        height="600px"></iframe>
+                </div>
+                <div class="grid-item">
+                    <iframe src="https://docs.google.com/document/d/e/2PACX-1vRp1QGHPi-68H-tTscpMfApxVS6tllr8YJzRMLnSBxl-2WuZY3XeZGA8y5GGezs7WFL7UThl1eHD2Xc/pub?embedded=true" width="100%" height="100%"></iframe>
+                </div>
+            </div>
+            <div class="grid2">
+                <div class="grid-item">
+                    <h2>Table Sample</h2>
+                    <div id="style_csv_div"></div>
+                </div>
+            </div>
+        </main>
+    </body>
+</div>
+
+</html>

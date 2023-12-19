@@ -1,0 +1,6 @@
+.grid2{
+    display: grid;
+    padding: 10px;
+    grid-gap: 10px;
+    grid-template-columns: auto;
+  }
