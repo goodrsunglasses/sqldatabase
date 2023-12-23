@@ -1,5 +1,5 @@
 body{
-  background-color: white;
+  background-color: #A0D1CA;
 } 
 a:visited{
   color:#0C2340;
@@ -7,7 +7,7 @@ a:visited{
 h1 {
   text-decoration: underline;
   font-size:220%;
-  color: #F8A3BC;
+  color: #0C2340;
   text-align: center;
   margin: 0;
 }
@@ -34,9 +34,7 @@ p {
 a:link {
   color: #F8A3BC;
 }
-p span{
-  background-color: #0C2340;
-}
+
 .self-image{
   width: 400px;
   height: auto;
@@ -50,10 +48,10 @@ p span{
 
 .grid-item{
   border-style: double;
-  border-color:#F8A3BC;
-  color : #F8A3BC;
+  border-color:#0C2340;
+  color : #0C2340;
   border-width: 12px;
-  background-color: #0C2340;
+  background-color: white;
   text-align:center;
 }
 
@@ -92,7 +90,7 @@ p span{
   padding: 8px 8px 8px 32px;
   text-decoration: none;
   font-size: 25px;
-  color: #F8A3BC;
+  color: #A0D1CA;
   display: block;
   transition: 0.3s;
 }
