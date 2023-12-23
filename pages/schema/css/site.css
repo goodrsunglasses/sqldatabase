@@ -19,6 +19,7 @@
 
 .dropdown:hover .dropdown-content,
 .dropdown.active .dropdown-content {
+    background-color: #0C2340;
     visibility: visible; /* Make it visible */
     opacity: 1; /* Fully opaque */
     max-height: 500px; /* Adjust as needed to fit content */
@@ -27,7 +28,7 @@
 /* Style the links inside the dropdown */
 .dropdown-content a {
     margin-top: 5px;
-    color: #F8A3BC;
+    color: #A0D1CA;
     margin-left: 30px;
     padding: 12px 16px;
     text-decoration: none;
@@ -37,5 +38,6 @@
 
 /* Change color of dropdown links on hover */
 .dropdown-content a:hover {
-    background-color: #0C2340;
+    background-color: white;
+    color: black;
 }
