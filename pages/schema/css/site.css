@@ -4,3 +4,38 @@
     grid-gap: 10px;
     grid-template-columns: auto;
   }
+  .dropdown-content {
+    visibility: hidden; /* Initially hidden */
+    opacity: 0; /* Initially fully transparent */
+    max-height: 0; /* Initially no height */
+    transition: visibility 0s, opacity 1.0s ease, max-height 1.0s ease;
+    /* The rest of your styles */
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    background-color: #f9f9f9;
+    overflow: hidden;
+}
+
+.dropdown:hover .dropdown-content,
+.dropdown.active .dropdown-content {
+    visibility: visible; /* Make it visible */
+    opacity: 1; /* Fully opaque */
+    max-height: 500px; /* Adjust as needed to fit content */
+}
+
+/* Style the links inside the dropdown */
+.dropdown-content a {
+    margin-top: 5px;
+    color: #F8A3BC;
+    margin-left: 30px;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    font-size: 16px;  
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {
+    background-color: #0C2340;
+}

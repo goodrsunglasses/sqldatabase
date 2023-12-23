@@ -1,13 +1,13 @@
 body{
-  background-color: #10435E;
+  background-color: white;
 } 
 a:visited{
-  color:#40E0D8;
+  color:#0C2340;
 }
 h1 {
   text-decoration: underline;
-  font-size:350%;
-  color: #40E0D8;
+  font-size:220%;
+  color: #F8A3BC;
   text-align: center;
   margin: 0;
 }
@@ -32,10 +32,10 @@ p {
   margin-left: 10px;
 }
 a:link {
-  color: #40E0D8;
+  color: #F8A3BC;
 }
 p span{
-  background-color: #FFFFFF;
+  background-color: #0C2340;
 }
 .self-image{
   width: 400px;
@@ -50,10 +50,10 @@ p span{
 
 .grid-item{
   border-style: double;
-  border-color:#40E0D8;
-  color : #000000;
+  border-color:#F8A3BC;
+  color : #F8A3BC;
   border-width: 12px;
-  background-color: #FFFFFF;
+  background-color: #0C2340;
   text-align:center;
 }
 
@@ -67,7 +67,7 @@ p span{
   flex-wrap: wrap;
   background-color: #FFFFFF;
   font-size: 35px;
-  color: #40E0D8;
+  color: #0C2340;
   border-width: 12px;
   border-style: double;
 }
@@ -82,7 +82,7 @@ p span{
   z-index: 1; /* Stay on top */
   top: 0; /* Stay at the top */
   left: 0;
-  background-color: #FFFFFF;
+  background-color: #0C2340;
   overflow-x: hidden; /* Disable horizontal scroll */
   padding-top: 60px; /* Place content 60px from the top */
   transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
@@ -92,7 +92,7 @@ p span{
   padding: 8px 8px 8px 32px;
   text-decoration: none;
   font-size: 25px;
-  color: #40E0D8;
+  color: #F8A3BC;
   display: block;
   transition: 0.3s;
 }
@@ -144,7 +144,18 @@ th {
 h3 {
   text-decoration: underline;
   font-size:250%;
-  color: #40E0D8;
+  color: #F8A3BC;
   text-align: center;
   margin: 0;
+}
+h4 {
+  text-decoration: underline;
+  font-size:350%;
+  color: #0C2340;
+  text-align: center;
+  margin: 0;
+}
+.headers h4{
+  flex: 1;
+  padding: 10px;
 }
