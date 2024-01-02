@@ -3,6 +3,16 @@
     padding: 10px;
     grid-gap: 10px;
     grid-template-columns: auto;
+    height: 1800px;
+  }
+  .grid2-item{
+    border-style: double;
+    border-color:#0C2340;
+    color : #0C2340;
+    border-width: 12px;
+    background-color: white;
+    text-align:center;
+    
   }
   .dropdown-content {
     visibility: hidden; /* Initially hidden */

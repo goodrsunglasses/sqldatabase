@@ -32,7 +32,7 @@ p {
   margin-left: 10px;
 }
 a:link {
-  color: #F8A3BC;
+  color: #0C2340;
 }
 
 .self-image{
@@ -141,8 +141,8 @@ th {
 }
 h3 {
   text-decoration: underline;
-  font-size:250%;
-  color: #F8A3BC;
+  font-size:180%;
+  color: #0C2340;
   text-align: center;
   margin: 0;
 }
