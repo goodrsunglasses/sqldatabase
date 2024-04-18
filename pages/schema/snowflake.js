@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-  fetch('http://192.168.1.169:5000/data')
+  fetch('http://108.83.116.193:8000/data')
       .then(response => response.json())
       .then(response => {
           const container = document.getElementById('data-container');
