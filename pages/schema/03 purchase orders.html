@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<div id="main">
+
+    <head>
+        <link rel="stylesheet" type="text/css" href="../../css/site.css">
+        <link rel="stylesheet" type="text/css" href="css/site.css">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="../../js/script.js" defer></script>
+
+        <div id="mySidenav" class="sidenav">
+			<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+			<div class="dropdown">
+				<a href="03 purchase orders.html">Purchase Orders</a>
+				<div class="dropdown-content2">
+					<a href="03_1 dim_purchase_orders.html">Dim.purchase_orders</a>
+					<a href="03_2 fact_purchase_order_item.html">Fact.purchase_order_item</a>
+					<a href="03_3 fact_purchase_order_line.html">Fact.purchase_order_line</a>
+                    <a href="03_4 fact_purchase_orders.html">Fact..purchase_orders</a>
+				</div>
+			</div>
+		</div>
+
+        <a id="top"></a>
+        <div class="headers">
+            <img class="navimg" src="../../img/menuham.png" onclick="openNav()" />
+            <h1>BI Documentation Library</h1>
+        </div>
+  <div class="top-bar">
+			<ul>
+				<li><a href="../../index.html">Home</a></li>
+				<li><a href="01 index.html">Schema</a></li>
+				<li><a href="../dashboards/index.html">Dashboards</a></li>
+			</ul>
+		</div>
+    </head>
+    <script>
+		$(document).ready(function () {
+			openNav();
+		});
+	</script>
+    <body>
+        <main>
+            <a id="revenue"></a>
+            <a id="margin"></a>
+            <h3>Purchase Orders Overview</h3>
+            <div class="grid2">
+                <div class="grid2-item">
+                    <iframe src="https://docs.google.com/document/d/e/2PACX-1vRxvdz87WpmuP18F8PySTNvgHbeYsNx_4W0IxGKd9pHRUZgPa5LU4IYsS6V4aNwexWDM4RS2uIQcg4z/pub?embedded=true"width="100%" height="900px"></iframe>
+                </div>
+            </div>
+        </main>
+    </body>
+</div>
+
+</html>

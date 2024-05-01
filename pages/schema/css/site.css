@@ -33,6 +33,14 @@
     opacity: 1; /* Fully opaque */
     max-height: 500px; /* Adjust as needed to fit content */
 }
+.dropdown-content2 {
+  opacity: 1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  background-color: #0C2340;
+  overflow: hidden;
+}
 
 /* Style the links inside the dropdown */
 .dropdown-content a {
@@ -44,7 +52,15 @@
     display: block;
     font-size: 16px;  
 }
-
+.dropdown-content2 a {
+  margin-top: 5px;
+  color: #A0D1CA;
+  margin-left: 30px;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  font-size: 16px;  
+}
 /* Change color of dropdown links on hover */
 .dropdown-content a:hover {
     background-color: white;
