@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<div id="main">
+
+    <head>
+        <link rel="stylesheet" type="text/css" href="../../css/site.css">
+        <link rel="stylesheet" type="text/css" href="css/site.css">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="../../js/script.js" defer></script>
+
+        <div id="mySidenav" class="sidenav">
+			<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+			<div class="dropdown">
+				<a href="07 Klaviyo.html">Klaviyo</a>
+				<div class="dropdown-content2">
+					<a href="07_1 dim.klaviyo_metrics.html">Dim.klaviyo_metrics</a>
+					<a href="07_2 dim_klaviyo_campaigns.html">Dim.klaviyo_campaigns</a>
+                    <a href="07_3 dim_klaviyo_flows.html">Dim.klaviyo_flows</a>
+                    <a href="07_4 fact_klaviyo_events.html">Fact.klaviyo_events</a>
+                    <a href="07_5 fact_klaviyo_order_attribution.html">Fact.klaviyo_order_attribution</a>
+                    <a href="07_6 fact_klaviyo_campaign_metrics.html">Fact.klaviyo_campaign_metrics</a>
+				</div>
+			</div>
+		</div>
+
+
+        <a id="top"></a>
+        <div class="headers">
+            <img class="navimg" src="../../img/menuham.png" onclick="openNav()" />
+            <h1>BI Documentation Library</h1>
+        </div>
+  <div class="top-bar">
+			<ul>
+				<li><a href="../../index.html">Home</a></li>
+				<li><a href="01 index.html">Schema</a></li>
+				<li><a href="../dashboards/index.html">Dashboards</a></li>
+			</ul>
+		</div>
+    </head>
+    <script>
+		$(document).ready(function () {
+			openNav();
+		});
+	</script>
+    <body>
+        <main>
+            <a id="revenue"></a>
+            <a id="margin"></a>
+            <h3>Dim.klaviyo_campaigns</h3>
+            <div class="grid2">
+                <div class="grid2-item">
+                    <iframe src="https://docs.google.com/document/d/e/2PACX-1vTvyxVxk_VD9cRgAbA5yLkbA1j9cq4JIvpOHhYSNt2dsV2_TJC_0DyDy1_q1Y86QcTnvy3D3dwkbF6n/pub?embedded=true"width="100%" height="2500px"></iframe>
+                </div>
+            </div>
+        </main>
+    </body>
+</div>
+
+</html>
